@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Ma Réu</string>
+    <!-- Room names -->
+    <string name="bowser">Bowser</string>
+    <string name="donkey">Donkey</string>
+    <string name="goomba">Goomba</string>
+    <string name="kirby">Kirby</string>
+    <string name="luigi">Luigi</string>
+    <string name="mario">Mario</string>
+    <string name="peach">Peach</string>
+    <string name="toad">Toad</string>
+    <string name="wario">Wario</string>
+    <string name="yoshi">Yoshi</string>
 </resources>

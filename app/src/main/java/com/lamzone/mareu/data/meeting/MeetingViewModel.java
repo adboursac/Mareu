@@ -30,12 +30,11 @@ public class MeetingViewModel extends ViewModel {
 
     public void filterByRoom(Room room) {
         List<Meeting> meetings = (List<Meeting>) getMutableLiveData().getValue();
-
+        if (meetings == null) return;
         ArrayList<Meeting> filteredList = new ArrayList<>();
         for ( Meeting meeting : meetings) {
             if (meeting.getRoom() == room) filteredList.add(meeting);
         }
-
         mMutableLiveData.setValue(filteredList);
     }
 }
