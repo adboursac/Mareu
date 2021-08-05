@@ -9,7 +9,7 @@ public class Meeting {
     private String title;
     private Room room;
 
-    public Meeting(int id, String title, Room room) {
+    public Meeting(long id, String title, Room room) {
         this.id = id;
         this.title = title;
         this.room = room;

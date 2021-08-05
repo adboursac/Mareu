@@ -18,5 +18,5 @@ public class MeetingRepository {
 
     public void deleteMeeting(Meeting meeting) { service.deleteMeeting(meeting); }
 
-    public void createMeeting(Meeting meeting) { service.createMeeting(meeting); }
+    public void addMeeting(Meeting meeting) { service.addMeeting(meeting); }
 }

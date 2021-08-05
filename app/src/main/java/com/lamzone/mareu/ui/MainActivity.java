@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(mBinding.getRoot());
     }
 
-    private void initNavController() {
+    private void initNavigationBar() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
@@ -46,9 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUI();
-        initNavController();
+        initNavigationBar();
         initViewModel();
     }
-
-
 }

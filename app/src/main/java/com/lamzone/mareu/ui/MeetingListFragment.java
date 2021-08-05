@@ -31,13 +31,17 @@ public class MeetingListFragment extends Fragment {
     private FragmentMeetingListBinding mBinding;
     private RecyclerView mRecyclerView;
 
-    private void initData() {
-        mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
-        mMeetingViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), meetings -> {
-            mMeetings.clear();
-            mMeetings.addAll(meetings);
-            mRecyclerView.getAdapter().notifyDataSetChanged();
-        });
+    @Override
+    public View onCreateView (LayoutInflater inflater,
+                              ViewGroup container,
+                              Bundle savedInstanceState) {
+        mBinding = FragmentMeetingListBinding.inflate(inflater, container, false);
+
+        initRecyclerView(mBinding.getRoot());
+        initData();
+        initAddButton();
+
+        return mBinding.getRoot();
     }
 
     private void initRecyclerView(View root) {
@@ -49,17 +53,18 @@ public class MeetingListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
-        mBinding = FragmentMeetingListBinding.inflate(inflater, container, false);
+    private void initData() {
+        mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
+        mMeetingViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), meetings -> {
+            mMeetings.clear();
+            mMeetings.addAll(meetings);
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+        });
+    }
+
+    private void initAddButton() {
         mBinding.addButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingAdd);
         });
-
-        initRecyclerView(mBinding.getRoot());
-        initData();
-        return mBinding.getRoot();
     }
 }

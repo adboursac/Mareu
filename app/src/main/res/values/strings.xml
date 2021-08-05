@@ -4,7 +4,7 @@
     <string name="meetingList">Meeting list</string>
     <string name="addMeeting">Add a new meeting</string>
     <string name="editMeeting">Edit meeting</string>
-    <string name="fieldTitle">Title</string>
+    <string name="fieldTitle">Meeting title</string>
     <!-- Room names -->
     <string name="bowser">Bowser</string>
     <string name="donkey">Donkey</string>

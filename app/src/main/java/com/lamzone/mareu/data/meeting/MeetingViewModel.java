@@ -28,8 +28,8 @@ public class MeetingViewModel extends ViewModel {
         mMutableLiveData.setValue(meetings);
     }
 
-    public void createMeeting(Meeting meeting) {
-        mMeetingRepository.createMeeting(meeting);
+    public void addMeeting(Meeting meeting) {
+        mMeetingRepository.addMeeting(meeting);
         List<Meeting> meetings = mMeetingRepository.getMeetings();
         mMutableLiveData.setValue(meetings);
     }
