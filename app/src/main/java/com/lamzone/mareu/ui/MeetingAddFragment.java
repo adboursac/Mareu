@@ -4,7 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -22,8 +26,8 @@ import java.util.List;
 public class MeetingAddFragment extends Fragment {
 
     private MeetingViewModel mMeetingViewModel;
-
     private FragmentMeetingAddBinding mBinding;
+    private Room mSelectedRoom;
 
     @Override
     public View onCreateView (LayoutInflater inflater,
@@ -33,6 +37,7 @@ public class MeetingAddFragment extends Fragment {
 
         initData();
         initAddButton();
+        initRoomDropMenu(mBinding.roomDropDownMenu);
 
         return mBinding.getRoot();
     }
@@ -43,16 +48,30 @@ public class MeetingAddFragment extends Fragment {
 
     public void initAddButton() {
         mBinding.addButton.setOnClickListener(v -> {
-            mMeetingViewModel.addMeeting(generateMeeting());
-            Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
+            String validationMessage = mMeetingViewModel.addMeeting(generateMeeting());
+
+            if (validationMessage == null) {
+                Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
+            }
+            else {
+                Toast.makeText(getContext(), validationMessage,1000);
+            }
         });
     }
 
-    public Meeting generateMeeting() {
+    private void initRoomDropMenu(AutoCompleteTextView dropMenu) {
+        final RoomDropListAdapter adapter = new RoomDropListAdapter(requireContext(), Room.values());
+        dropMenu.setAdapter(adapter);
+        dropMenu.setOnItemClickListener((parent, view, position, id) ->
+                mSelectedRoom = adapter.getItem(position)
+        );
+    }
+
+    private Meeting generateMeeting() {
         Meeting meeting = new Meeting(
                 System.currentTimeMillis(),
                 mBinding.title.getText().toString(),
-                Room.Kirby);
+                mSelectedRoom);
         return meeting;
     }
 }

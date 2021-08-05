@@ -26,7 +26,6 @@ public enum Room {
 
     @ColorRes
     private final int mColor;
-    private int mName1;
 
     Room(@StringRes int name, @ColorRes int color) {
         mName = name;

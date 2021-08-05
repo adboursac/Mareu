@@ -28,12 +28,21 @@ public class MeetingViewModel extends ViewModel {
         mMutableLiveData.setValue(meetings);
     }
 
-    public void addMeeting(Meeting meeting) {
+    public String addMeeting(Meeting meeting) {
+        String validationMessage = meetingValidTest(meeting);
+        if (validationMessage != null) return validationMessage;
+
         mMeetingRepository.addMeeting(meeting);
         List<Meeting> meetings = mMeetingRepository.getMeetings();
         mMutableLiveData.setValue(meetings);
+
+        return null;
     }
 
+    private String meetingValidTest(Meeting meeting) {
+        if (meeting.getRoom() == null) return "@string:invalidSelectRoom";
+        return null;
+    }
 
     public void deleteMeeting(Meeting meeting) {
         mMeetingRepository.deleteMeeting(meeting);

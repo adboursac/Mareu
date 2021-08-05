@@ -5,6 +5,8 @@
     <string name="addMeeting">Add a new meeting</string>
     <string name="editMeeting">Edit meeting</string>
     <string name="fieldTitle">Meeting title</string>
+    <string name="selectARoom">Select a room</string>
+    <string name="invalidSelectRoom">Please select a room</string>
     <!-- Room names -->
     <string name="bowser">Bowser</string>
     <string name="donkey">Donkey</string>
@@ -16,4 +18,7 @@
     <string name="toad">Toad</string>
     <string name="wario">Wario</string>
     <string name="yoshi">Yoshi</string>
+    <!-- Descriptions -->
+    <string name="addButton">Add Button</string>
+    <string name="icon">Icon</string>
 </resources>
