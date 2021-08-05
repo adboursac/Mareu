@@ -1,12 +1,21 @@
 package com.lamzone.mareu.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 
+import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.databinding.ActivityMainBinding;
+
+import static androidx.navigation.Navigation.findNavController;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +27,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(mBinding.getRoot());
     }
 
+    private void initNavController() {
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        NavController navController = navHostFragment.getNavController();
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(navController.getGraph()).build();
+        NavigationUI.setupWithNavController(
+                mBinding.toolbar, navController, appBarConfiguration);
+    }
+
     private void initViewModel() {
         mMeetingViewModel = new ViewModelProvider(this).get(MeetingViewModel.class);
         mMeetingViewModel.fetchMeetings();
@@ -27,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUI();
+        initNavController();
         initViewModel();
     }
+
+
 }

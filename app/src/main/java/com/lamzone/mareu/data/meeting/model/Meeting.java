@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import java.util.Objects;
 
 public class Meeting {
-    private final int id;
+    private final long id;
     private String title;
     private Room room;
 
@@ -15,7 +15,7 @@ public class Meeting {
         this.room = room;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

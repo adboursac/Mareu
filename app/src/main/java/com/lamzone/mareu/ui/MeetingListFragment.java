@@ -2,6 +2,8 @@ package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,14 +25,13 @@ import java.util.List;
 
 public class MeetingListFragment extends Fragment {
 
-    private static final MeetingApiService service  = DI.getMeetingApiService();
-    private List<Meeting> mMeetings;
-    private FragmentMeetingListBinding mBinding;
+    private List<Meeting> mMeetings = new ArrayList<>();
     private MeetingViewModel mMeetingViewModel;
+
+    private FragmentMeetingListBinding mBinding;
     private RecyclerView mRecyclerView;
 
     private void initData() {
-        mMeetings = new ArrayList<>();
         mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
         mMeetingViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), meetings -> {
             mMeetings.clear();
@@ -57,8 +58,8 @@ public class MeetingListFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingAdd);
         });
 
-        initData();
         initRecyclerView(mBinding.getRoot());
+        initData();
         return mBinding.getRoot();
     }
 }

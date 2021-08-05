@@ -28,13 +28,21 @@ public class MeetingViewModel extends ViewModel {
         mMutableLiveData.setValue(meetings);
     }
 
+    public void createMeeting(Meeting meeting) {
+        mMeetingRepository.createMeeting(meeting);
+        List<Meeting> meetings = mMeetingRepository.getMeetings();
+        mMutableLiveData.setValue(meetings);
+    }
+
     public void filterByRoom(Room room) {
         List<Meeting> meetings = (List<Meeting>) getMutableLiveData().getValue();
         if (meetings == null) return;
+
         ArrayList<Meeting> filteredList = new ArrayList<>();
         for ( Meeting meeting : meetings) {
             if (meeting.getRoom() == room) filteredList.add(meeting);
         }
+
         mMutableLiveData.setValue(filteredList);
     }
 }

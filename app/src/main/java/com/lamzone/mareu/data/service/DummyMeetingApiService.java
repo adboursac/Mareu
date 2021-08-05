@@ -4,9 +4,12 @@ import com.lamzone.mareu.data.meeting.model.Meeting;
 
 import java.util.List;
 
-public class DummyMeetingService implements MeetingApiService {
+/**
+ * Dummy mock for the Api
+ */
+public class DummyMeetingApiService implements MeetingApiService {
 
-    public static final List<Meeting> mMeetings = DummyMeetingGenerator.generateMeetings();
+    private final List<Meeting> mMeetings = DummyMeetingGenerator.generateMeetings();
 
     /**
      * {@inheritDoc}
@@ -23,7 +26,7 @@ public class DummyMeetingService implements MeetingApiService {
      */
     @Override
     public void deleteMeeting(Meeting meeting) {
-
+        mMeetings.remove(meeting);
     }
 
     /**
@@ -32,6 +35,6 @@ public class DummyMeetingService implements MeetingApiService {
      */
     @Override
     public void createMeeting(Meeting meeting) {
-
+        mMeetings.add(meeting);
     }
 }

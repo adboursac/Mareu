@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/fragmentMeetingList"
         android:name="com.lamzone.mareu.ui.MeetingListFragment"
-        android:label="fragment_meeting_list"
+        android:label="@string/meetingList"
         tools:layout="@layout/fragment_meeting_list" >
         <action
             android:id="@+id/navigateToMeetingAdd"
@@ -16,7 +16,7 @@
     <fragment
         android:id="@+id/fragmentMeetingAdd"
         android:name="com.lamzone.mareu.ui.MeetingAddFragment"
-        android:label="fragment_meeting_add"
+        android:label="@string/addMeeting"
         tools:layout="@layout/fragment_meeting_add" >
         <action
             android:id="@+id/navigateToMeetingList"
