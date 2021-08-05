@@ -34,6 +34,13 @@ public class MeetingViewModel extends ViewModel {
         mMutableLiveData.setValue(meetings);
     }
 
+
+    public void deleteMeeting(Meeting meeting) {
+        mMeetingRepository.deleteMeeting(meeting);
+        List<Meeting> meetings = mMeetingRepository.getMeetings();
+        mMutableLiveData.setValue(meetings);
+    }
+
     public void filterByRoom(Room room) {
         List<Meeting> meetings = (List<Meeting>) getMutableLiveData().getValue();
         if (meetings == null) return;

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lamzone.mareu.data.di.DI;
+import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
@@ -23,7 +24,7 @@ import com.lamzone.mareu.databinding.FragmentMeetingListBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeetingListFragment extends Fragment {
+public class MeetingListFragment extends Fragment implements MeetingDeleteCommand {
 
     private List<Meeting> mMeetings = new ArrayList<>();
     private MeetingViewModel mMeetingViewModel;
@@ -49,7 +50,7 @@ public class MeetingListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        MeetingListRecylerViewAdapter mAdapter = new MeetingListRecylerViewAdapter(mMeetings);
+        MeetingListRecylerViewAdapter mAdapter = new MeetingListRecylerViewAdapter(mMeetings, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -67,4 +68,12 @@ public class MeetingListFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingAdd);
         });
     }
+
+    @Override
+    public void deleteMeeting(Meeting meeting) {
+        mMeetingViewModel.deleteMeeting(meeting);
+    }
 }
+
+
+
