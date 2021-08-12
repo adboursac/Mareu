@@ -1,13 +1,8 @@
 package com.lamzone.mareu.ui;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,25 +12,26 @@ import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.MeetingItemBinding;
 
+import java.text.BreakIterator;
 import java.util.List;
 
-public class MeetingListRecylerViewAdapter extends RecyclerView.Adapter<MeetingListRecylerViewAdapter.ViewHolder> {
+public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<MeetingListRecyclerViewAdapter.ViewHolder> {
 
     private final List<Meeting> mMeetings;
     private MeetingDeleteCommand mDeleteCommand;
     private Context mContext;
 
-    public MeetingListRecylerViewAdapter(List<Meeting> meetings, MeetingDeleteCommand deleteCommand) {
+    public MeetingListRecyclerViewAdapter(List<Meeting> meetings, MeetingDeleteCommand deleteCommand) {
         mMeetings = meetings;
         mDeleteCommand = deleteCommand;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private MeetingItemBinding meetingItemBinding;
+        private MeetingItemBinding mMeetingItemBinding;
 
         public ViewHolder(MeetingItemBinding meetingItemBinding) {
             super(meetingItemBinding.getRoot());
-            this.meetingItemBinding = meetingItemBinding;
+            mMeetingItemBinding = meetingItemBinding;
         }
     }
 
@@ -51,12 +47,13 @@ public class MeetingListRecylerViewAdapter extends RecyclerView.Adapter<MeetingL
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Meeting meeting = mMeetings.get(position);
         String roomName = mContext.getResources().getString(meeting.getRoom().getName());
+        String roomLetter = Room.getLetter(roomName);
         int roomColor = mContext.getResources().getColor(meeting.getRoom().getColor());
 
-        holder.meetingItemBinding.itemTitle.setText(meeting.getTitle());
-        holder.meetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
-        holder.meetingItemBinding.itemIconLetter.setText(Room.getLetter(roomName));
-        holder.meetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
+        holder.mMeetingItemBinding.itemTitle.setText(meeting.getTitle());
+        holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
+        holder.mMeetingItemBinding.itemIconLetter.setText(roomLetter);
+        holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
         //holder.itemView.setOnClickListener(v -> activity.navigate(v.getContext(), meeting.getId()));
     }
 

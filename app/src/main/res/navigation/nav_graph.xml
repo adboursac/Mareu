@@ -12,12 +12,24 @@
         <action
             android:id="@+id/navigateToMeetingAdd"
             app:destination="@id/fragmentMeetingAdd" />
+        <action
+            android:id="@+id/navigateToRoomFilter"
+            app:destination="@id/roomFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragmentMeetingAdd"
         android:name="com.lamzone.mareu.ui.MeetingAddFragment"
         android:label="@string/addMeeting"
         tools:layout="@layout/fragment_meeting_add" >
+        <action
+            android:id="@+id/navigateToMeetingList"
+            app:destination="@id/fragmentMeetingList" />
+    </fragment>
+    <fragment
+        android:id="@+id/roomFilterFragment"
+        android:name="com.lamzone.mareu.ui.RoomFilterFragment"
+        android:label="@string/filterRooms"
+        tools:layout="@layout/fragment_room_filter" >
         <action
             android:id="@+id/navigateToMeetingList"
             app:destination="@id/fragmentMeetingList" />

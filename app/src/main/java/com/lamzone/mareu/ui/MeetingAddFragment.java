@@ -38,6 +38,7 @@ public class MeetingAddFragment extends Fragment {
         initData();
         initAddButton();
         initRoomDropMenu(mBinding.roomDropDownMenu);
+        setHasOptionsMenu(true);
 
         return mBinding.getRoot();
     }
@@ -54,7 +55,7 @@ public class MeetingAddFragment extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
             }
             else {
-                Toast.makeText(getContext(), validationMessage,1000);
+                Toast.makeText(getContext(), validationMessage, Toast.LENGTH_LONG).show();
             }
         });
     }

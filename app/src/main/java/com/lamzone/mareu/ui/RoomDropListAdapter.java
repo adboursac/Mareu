@@ -12,15 +12,15 @@ import androidx.annotation.NonNull;
 
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Room;
-import com.lamzone.mareu.databinding.RoomDropdownItemBinding;
+import com.lamzone.mareu.databinding.RoomItemBinding;
 
 public class RoomDropListAdapter extends ArrayAdapter<Room> {
 
     private Context mContext;
-    //private RoomDropdownItemBinding mRoomDropdownItemBinding;
+    private RoomItemBinding mRoomDropdownItemBinding;
 
     public RoomDropListAdapter(@NonNull Context context, Room[] rooms) {
-        super(context, R.layout.room_dropdown_item, rooms);
+        super(context, R.layout.room_item, rooms);
         mContext = context;
     }
 
@@ -37,15 +37,14 @@ public class RoomDropListAdapter extends ArrayAdapter<Room> {
 
     @NonNull
     public View getCustomView(int position, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View row = inflater.inflate(R.layout.room_dropdown_item, parent, false);
-
-        ImageView circle = row.findViewById(R.id.room_dropdown_item_circle);
-        TextView letter = row.findViewById(R.id.room_dropdown_item_icon_letter);
-        TextView name = row.findViewById(R.id.room_dropdown_item_name);
-
         Room room = getItem(position);
-        assert room != null;
+
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View row = inflater.inflate(R.layout.room_item, parent, false);
+
+        ImageView circle = row.findViewById(R.id.room_item_circle);
+        TextView letter = row.findViewById(R.id.room_item_icon_letter);
+        TextView name = row.findViewById(R.id.room_item_name);
 
         int roomColor = mContext.getResources().getColor(room.getColor());
         String roomName = mContext.getResources().getString(room.getName());

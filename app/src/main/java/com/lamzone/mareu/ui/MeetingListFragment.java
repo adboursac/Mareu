@@ -4,21 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
-import com.lamzone.mareu.data.service.MeetingApiService;
 import com.lamzone.mareu.databinding.FragmentMeetingListBinding;
 
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         initRecyclerView(mBinding.getRoot());
         initData();
         initAddButton();
+        setHasOptionsMenu(true);
 
         return mBinding.getRoot();
     }
@@ -50,13 +51,13 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        MeetingListRecylerViewAdapter mAdapter = new MeetingListRecylerViewAdapter(mMeetings, this);
+        MeetingListRecyclerViewAdapter mAdapter = new MeetingListRecyclerViewAdapter(mMeetings, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     private void initData() {
         mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
-        mMeetingViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), meetings -> {
+        mMeetingViewModel.getMeetingsLiveData().observe(getViewLifecycleOwner(), meetings -> {
             mMeetings.clear();
             mMeetings.addAll(meetings);
             mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -69,11 +70,28 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         });
     }
 
+    /*
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.meeting_menu_filter_hour);
+        item.setVisible(false);
+    }
+     */
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.meeting_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.meeting_menu_filter_room) Navigation.findNavController(getView()).navigate(R.id.navigateToRoomFilter);
+        return true;
+    }
+
     @Override
     public void deleteMeeting(Meeting meeting) {
         mMeetingViewModel.deleteMeeting(meeting);
     }
 }
-
-
-

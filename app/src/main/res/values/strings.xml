@@ -6,7 +6,12 @@
     <string name="editMeeting">Edit meeting</string>
     <string name="fieldTitle">Meeting title</string>
     <string name="selectARoom">Select a room</string>
+    <string name="filterRooms">Filter by rooms</string>
+    <string name="filterHours">Filter by hours</string>
+    <string name="selectAll">Select All</string>
+    <string name="cancel">Cancel</string>
     <string name="invalidSelectRoom">Please select a room</string>
+    <string name="invalidEmail">Please enter a valid email address</string>
     <!-- Room names -->
     <string name="bowser">Bowser</string>
     <string name="donkey">Donkey</string>
@@ -20,5 +25,6 @@
     <string name="yoshi">Yoshi</string>
     <!-- Descriptions -->
     <string name="addButton">Add Button</string>
+    <string name="validateButton">Validate Button</string>
     <string name="icon">Icon</string>
 </resources>

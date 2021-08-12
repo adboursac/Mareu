@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/room_dropdown_item_circle"
+        android:id="@+id/room_item_circle"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
@@ -19,27 +19,27 @@
         android:contentDescription="@string/icon"/>
 
     <TextView
-        android:id="@+id/room_dropdown_item_icon_letter"
+        android:id="@+id/room_item_icon_letter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="30sp"
         android:textColor="@color/white"
         android:layout_marginBottom="2dp"
-        app:layout_constraintTop_toTopOf="@id/room_dropdown_item_circle"
-        app:layout_constraintBottom_toBottomOf="@id/room_dropdown_item_circle"
-        app:layout_constraintEnd_toEndOf="@id/room_dropdown_item_circle"
-        app:layout_constraintStart_toStartOf="@id/room_dropdown_item_circle"/>
+        app:layout_constraintTop_toTopOf="@id/room_item_circle"
+        app:layout_constraintBottom_toBottomOf="@id/room_item_circle"
+        app:layout_constraintEnd_toEndOf="@id/room_item_circle"
+        app:layout_constraintStart_toStartOf="@id/room_item_circle"/>
 
     <TextView
-        android:id="@+id/room_dropdown_item_name"
+        android:id="@+id/room_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/room_dropdown_item_circle"
-        app:layout_constraintStart_toEndOf="@+id/room_dropdown_item_circle"
-        app:layout_constraintTop_toTopOf="@+id/room_dropdown_item_circle"/>
+        app:layout_constraintBottom_toBottomOf="@+id/room_item_circle"
+        app:layout_constraintStart_toEndOf="@+id/room_item_circle"
+        app:layout_constraintTop_toTopOf="@+id/room_item_circle"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
