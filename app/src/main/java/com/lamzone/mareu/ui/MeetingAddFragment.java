@@ -4,11 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -18,10 +16,8 @@ import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.FragmentMeetingAddBinding;
-import com.lamzone.mareu.databinding.FragmentMeetingListBinding;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalTime;
 
 public class MeetingAddFragment extends Fragment {
 
@@ -72,7 +68,8 @@ public class MeetingAddFragment extends Fragment {
         Meeting meeting = new Meeting(
                 System.currentTimeMillis(),
                 mBinding.title.getText().toString(),
-                mSelectedRoom);
+                mSelectedRoom,
+                LocalTime.of(21, 30));
         return meeting;
     }
 }

@@ -2,38 +2,34 @@ package com.lamzone.mareu.data.meeting.model;
 
 import androidx.annotation.Nullable;
 
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Meeting {
     private final long id;
     private String title;
     private Room room;
+    private LocalTime time;
 
-    public Meeting(long id, String title, Room room) {
+
+    public Meeting(long id, String title, Room room, LocalTime time) {
         this.id = id;
         this.title = title;
         this.room = room;
+        this.time = time;
     }
 
     public long getId() {
         return id;
     }
-
     public String getTitle() {
         return title;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public Room getRoom() {
         return room;
     }
+    public LocalTime getTime() { return time; }
 
-    public void setRoom(Room room) {
-        this.room = room;
-    }
 
     @Override
     public boolean equals(Object o) {
