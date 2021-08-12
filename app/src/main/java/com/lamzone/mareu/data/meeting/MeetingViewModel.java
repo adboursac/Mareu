@@ -100,7 +100,6 @@ public class MeetingViewModel extends ViewModel {
             selectedRooms[position] = true;
         }
 
-        Log.e("@@counter",""+mSelectedRoomsCounter);
         mSelectedRoomsLiveData.setValue(selectedRooms);
     }
 

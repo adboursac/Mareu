@@ -65,8 +65,6 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
         }
 
         holder.itemView.setOnClickListener(v -> mSelectCommand.selectRoom(room));
-
-        //grey items out -> setEnabled(false) ?
     }
 
     @Override

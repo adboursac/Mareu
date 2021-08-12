@@ -4,11 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/app_bar_switch"
-        android:title="Switch"
-        app:actionLayout="@layout/switch_item"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/room_filter_select_all"
         android:icon="@drawable/ic_baseline_select_all_24"
         android:title="@string/selectAll"
