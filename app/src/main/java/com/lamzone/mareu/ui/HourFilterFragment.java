@@ -4,9 +4,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -51,7 +55,7 @@ public class HourFilterFragment extends Fragment {
     }
 
     private void initHoursFilterObserver() {
-        mMeetingViewModel.getHoursFilterLiveData().observe(getViewLifecycleOwner(), selected -> {
+        mMeetingViewModel.getHoursFilterLiveData().observe(getViewLifecycleOwner(), hourRange -> {
             mMeetingViewModel.applyFilters();
         });
     }
@@ -76,5 +80,17 @@ public class HourFilterFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {}
         };
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.hour_filter_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        mBinding.fromTimeInput.setText("");
+        mBinding.toTimeInput.setText("");
+        return true;
     }
 }

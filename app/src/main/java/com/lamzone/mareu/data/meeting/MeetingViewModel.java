@@ -148,9 +148,13 @@ public class MeetingViewModel extends ViewModel {
         try { toTime = LocalTime.parse(to, DateTimeFormatter.ofPattern("HH:mm")); }
         catch (Exception e) { toTime = null; }
 
-        if (fromTime == null && toTime == null) return;
-
         LocalTime[] hourRange = new LocalTime[] {fromTime, toTime};
+        mHoursFilterLiveData.setValue(hourRange);
+    }
+
+    public void hourFilterClear() {
+        LocalTime[] hourRange = new LocalTime[2];
+        Arrays.fill(hourRange, null);
         mHoursFilterLiveData.setValue(hourRange);
     }
 
