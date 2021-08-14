@@ -15,11 +15,12 @@
     <string name="selectAll">Select All</string>
     <string name="cancel">Cancel</string>
     <string name="membersList">Members List</string>
+    <string name="addNewMember">Add a member email</string>
     <string name="invalidMeetingTitle">The title must have at least two caracters</string>
     <string name="invalidMeetingRoomEmpty">Please select a room</string>
     <string name="invalidMeetingStartTimeEmpty">Please select a start time</string>
     <string name="invalidMeetingEndTimeEmpty">Please select an end time</string>
-    <string name="invalidMeetingEmail">Some emails are invalid</string>
+    <string name="invalidMeetingMiniumTwoMembers">At least two emails are required</string>
     <!-- Room names -->
     <string name="bowser">Bowser</string>
     <string name="donkey">Donkey</string>

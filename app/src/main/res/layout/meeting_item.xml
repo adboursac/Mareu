@@ -47,6 +47,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:text="@string/membersList"
+        android:ellipsize="end"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@+id/item_room_icon"
         app:layout_constraintStart_toEndOf="@+id/item_room_icon"/>
 

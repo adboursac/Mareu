@@ -87,8 +87,7 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
                 Navigation.findNavController(getView()).navigate(R.id.navigateToHourFilter);
                 break;
             default:
-                Log.w("MeetingListFragment","onOptionsItemSelected didn't match any menu item");
-                break;
+                Log.w("MeetingListFragment","onOptionsItemSelected: didn't match any menu item");
         }
         return true;
     }

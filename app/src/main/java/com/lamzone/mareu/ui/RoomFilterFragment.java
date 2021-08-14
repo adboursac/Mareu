@@ -1,6 +1,7 @@
 package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -86,8 +87,11 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
             case R.id.room_filter_select_all:
                 mMeetingViewModel.roomFilterSelectAll();
                 break;
-            default:
+            case R.id.room_filter_cancel:
                 mMeetingViewModel.roomFilterClear();
+                break;
+            default:
+                Log.w("RoomFilterFragment","onOptionsItemSelected: didn't match any menu item");
         }
         return true;
     }

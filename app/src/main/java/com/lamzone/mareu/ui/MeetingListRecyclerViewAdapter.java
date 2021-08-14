@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
+import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.MeetingItemBinding;
@@ -53,7 +54,9 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         int roomColor = mContext.getResources().getColor(meeting.getRoom().getColor());
 
         String title = meeting.getTitle() + " • " + time + " • " + roomName;
+        String memberList =  MeetingViewModel.listToString(meeting.getMemberList(), ", ");
         holder.mMeetingItemBinding.itemTitle.setText(title);
+        holder.mMeetingItemBinding.itemMembers.setText(memberList);
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
         holder.mMeetingItemBinding.itemIconLetter.setText(roomLetter);
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));

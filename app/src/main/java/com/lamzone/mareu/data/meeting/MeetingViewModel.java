@@ -1,6 +1,7 @@
 package com.lamzone.mareu.data.meeting;
 
 import android.content.Context;
+import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -71,6 +72,7 @@ public class MeetingViewModel extends ViewModel {
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
         if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
+        if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
         return 0;
     }
 
@@ -141,21 +143,17 @@ public class MeetingViewModel extends ViewModel {
     }
 
     public void setHourRange(String from, String to) {
-        LocalTime fromTime;
-        LocalTime toTime;
-        try { fromTime = LocalTime.parse(from, DateTimeFormatter.ofPattern("HH:mm")); }
-        catch (Exception e) { fromTime = null; }
-        try { toTime = LocalTime.parse(to, DateTimeFormatter.ofPattern("HH:mm")); }
-        catch (Exception e) { toTime = null; }
-
+        LocalTime fromTime = stringToLocalTime(from);
+        LocalTime toTime = stringToLocalTime(to);
         LocalTime[] hourRange = new LocalTime[] {fromTime, toTime};
         mHoursFilterLiveData.setValue(hourRange);
     }
 
-    public void hourFilterClear() {
-        LocalTime[] hourRange = new LocalTime[2];
-        Arrays.fill(hourRange, null);
-        mHoursFilterLiveData.setValue(hourRange);
+    public LocalTime stringToLocalTime(String timeString) {
+        LocalTime time;
+        try { time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm")); }
+        catch (Exception e) { time = null; }
+        return time;
     }
 
     public List<Meeting> applyRoomFilter(List<Meeting> meetings) {
@@ -220,27 +218,17 @@ public class MeetingViewModel extends ViewModel {
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 
-    private boolean isValidEmailAddress(String email) {
-        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        return m.matches();
+    public boolean validateEmail(String text) {
+        if (!text.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(text).matches()) return true;
+        else return false;
     }
 
-    @NonNull
-    private String stringifyParticipants(@NonNull List<String> participants) {
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < participants.size(); i++) {
-            String participant = participants.get(i);
-
-            result.append(participant);
-
-            if (i + 1 < participants.size()) {
-                result.append(", ");
-            }
+    public static String listToString(List<String> list, String separator) {
+        String text = "";
+        for (int i = 0; i < list.size(); i++) {
+            text += list.get(i);
+            if (i + 1 < list.size()) text += separator;
         }
-
-        return result.toString();
+        return text;
     }
 }

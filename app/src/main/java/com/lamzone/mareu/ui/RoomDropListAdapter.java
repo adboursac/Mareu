@@ -17,7 +17,6 @@ import com.lamzone.mareu.databinding.RoomItemBinding;
 public class RoomDropListAdapter extends ArrayAdapter<Room> {
 
     private Context mContext;
-    private RoomItemBinding mRoomItemBinding;
 
     public RoomDropListAdapter(@NonNull Context context, Room[] rooms) {
         super(context, R.layout.room_item, rooms);

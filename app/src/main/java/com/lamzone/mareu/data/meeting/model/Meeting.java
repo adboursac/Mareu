@@ -3,6 +3,7 @@ package com.lamzone.mareu.data.meeting.model;
 import androidx.annotation.Nullable;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class Meeting {
@@ -12,13 +13,16 @@ public class Meeting {
     private LocalTime mStartTime;
     private LocalTime mEndTime;
 
+    private List<String> mMemberList;
 
-    public Meeting(long id, String title, Room room, LocalTime startTime, LocalTime endTime) {
+
+    public Meeting(long id, String title, Room room, LocalTime startTime, LocalTime endTime, List<String> memberList) {
         mId = id;
         mTitle = title;
         mRoom = room;
         mStartTime = startTime;
         mEndTime = endTime;
+        mMemberList = memberList;
     }
 
     public long getId() {
@@ -30,6 +34,7 @@ public class Meeting {
     }
     public LocalTime getStartTime() { return mStartTime; }
     public LocalTime getEndTime() { return mEndTime; }
+    public List<String> getMemberList() { return mMemberList; }
 
     @Override
     public boolean equals(Object o) {
