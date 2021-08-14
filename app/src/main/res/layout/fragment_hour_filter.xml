@@ -7,7 +7,7 @@
     tools:context=".ui.HourFilterFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/startTimeLayout"
+        android:id="@+id/fromTimeLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         app:startIconTint="@color/blue_500">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/startTimeInput"
+            android:id="@+id/fromTimeInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusable="false"
@@ -29,20 +29,20 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/endTimeLayout"
+        android:id="@+id/toTimeLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:hint="@string/to"
-        app:layout_constraintTop_toBottomOf="@+id/startTimeLayout"
+        app:layout_constraintTop_toBottomOf="@+id/fromTimeLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:startIconDrawable="@drawable/ic_baseline_access_time_24"
         app:startIconTint="@color/blue_500">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/endTimeInput"
+            android:id="@+id/toTimeInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusable="false"

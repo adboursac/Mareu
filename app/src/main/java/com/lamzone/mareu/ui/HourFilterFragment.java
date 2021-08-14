@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.databinding.FragmentHourFilterBinding;
 
@@ -24,6 +28,8 @@ public class HourFilterFragment extends Fragment {
         mBinding = FragmentHourFilterBinding.inflate(inflater, container, false);
 
         initData();
+        initHourPickers();
+        initHoursFilterObserver();
         initApplyButton();
         setHasOptionsMenu(true);
 
@@ -34,9 +40,41 @@ public class HourFilterFragment extends Fragment {
         mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
     }
 
+    private void initHourPickers() {
+        mBinding.fromTimeInput.setText(mMeetingViewModel.getFromTimeString(getContext()));
+        mBinding.fromTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
+        TimePicker.setTimePickerOnTextInput(mBinding.fromTimeInput, getParentFragmentManager());
+
+        mBinding.toTimeInput.setText(mMeetingViewModel.getToTimeString(getContext()));
+        mBinding.toTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
+        TimePicker.setTimePickerOnTextInput(mBinding.toTimeInput, getParentFragmentManager());
+    }
+
+    private void initHoursFilterObserver() {
+        mMeetingViewModel.getHoursFilterLiveData().observe(getViewLifecycleOwner(), selected -> {
+            mMeetingViewModel.applyFilters();
+        });
+    }
+
     public void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
-
+            mMeetingViewModel.applyFilters();
+            Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
         });
+    }
+
+    private TextWatcher createTextWatcher(TextInputEditText from, TextInputEditText to) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mMeetingViewModel.setHourRange(from.getText().toString(), to.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
     }
 }

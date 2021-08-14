@@ -1,5 +1,7 @@
 package com.lamzone.mareu.data.meeting;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,6 +11,7 @@ import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,17 +31,15 @@ public class MeetingViewModel extends ViewModel {
         mHoursFilterLiveData = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
+        initHourFilter();
     }
 
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
         return mMeetingsLiveData;
     }
-    public MutableLiveData<boolean[]> getSelectedRoomsLiveData() {
-        return mSelectedRoomsLiveData;
-    }
+    public MutableLiveData<boolean[]> getSelectedRoomsLiveData() { return mSelectedRoomsLiveData; }
     public MutableLiveData<LocalTime[]> getHoursFilterLiveData() { return mHoursFilterLiveData; }
     public Room[] getRooms() { return mRooms; }
-
 
     public void fetchMeetings() {
         List<Meeting> meetings = mMeetingRepository.fetchMeetings();
@@ -117,21 +118,102 @@ public class MeetingViewModel extends ViewModel {
         mSelectedRoomsLiveData.setValue(selectedRoomsList);
     }
 
-    public void applyFilters() {
-        List<Meeting> cachedMeetings = mMeetingRepository.getCachedMeetings();
+    private void initHourFilter() {
+        LocalTime[] hourRange = new LocalTime[2];
+        Arrays.fill(hourRange, null);
+        mHoursFilterLiveData = new MutableLiveData<>(hourRange);
+    }
+
+    public String getFromTimeString(Context context) {
+        LocalTime fromTime = mHoursFilterLiveData.getValue()[0];
+        if (fromTime != null) return fromTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        else {
+            return context.getResources().getString(R.string.from);
+        }
+    }
+
+    public String getToTimeString(Context context) {
+        LocalTime endTime = mHoursFilterLiveData.getValue()[1];
+        if (endTime != null) return endTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        else {
+            return context.getResources().getString(R.string.to);
+        }
+    }
+
+    public void setHourRange(String from, String to) {
+        LocalTime fromTime;
+        LocalTime toTime;
+        try { fromTime = LocalTime.parse(from, DateTimeFormatter.ofPattern("HH:mm")); }
+        catch (Exception e) { fromTime = null; }
+        try { toTime = LocalTime.parse(to, DateTimeFormatter.ofPattern("HH:mm")); }
+        catch (Exception e) { toTime = null; }
+
+        if (fromTime == null && toTime == null) return;
+
+        LocalTime[] hourRange = new LocalTime[] {fromTime, toTime};
+        mHoursFilterLiveData.setValue(hourRange);
+    }
+
+    public List<Meeting> applyRoomFilter(List<Meeting> meetings) {
         if (mSelectedRoomsCounter == 0 || mSelectedRoomsCounter == mRooms.length) {
-            mMeetingsLiveData.setValue(cachedMeetings);
-            return;
+            return meetings;
         }
 
         ArrayList<Meeting> filteredList = new ArrayList<>();
+
         boolean[] selected = mSelectedRoomsLiveData.getValue();
-        for (Meeting meeting : cachedMeetings) {
-            int roomPosition = getRoomPosition(meeting.getRoom());
-            if (selected[roomPosition]) filteredList.add(meeting);
+        for (Meeting m : meetings) {
+            int roomPosition = getRoomPosition(m.getRoom());
+            if (selected[roomPosition]) filteredList.add(m);
         }
 
-        mMeetingsLiveData.setValue(filteredList);
+        return filteredList;
+    }
+
+    public List<Meeting> applyHourFilter(List<Meeting> meetings) {
+        LocalTime[] hourFilter = mHoursFilterLiveData.getValue();
+        if (hourFilter[0] == null && hourFilter[1] == null) {
+            return meetings;
+        }
+
+        ArrayList<Meeting> filteredList = new ArrayList<>();
+
+        if (hourFilter[0] == null) {
+            for (Meeting m : meetings) {
+                LocalTime endTimeMin = hourFilter[1].minusMinutes(1);
+                LocalTime endTimeMax = hourFilter[1].plusMinutes(1);
+                boolean upperMinRange = m.getEndTime().compareTo(endTimeMin) > 0;
+                boolean underMaxRange = m.getEndTime().compareTo(endTimeMax) < 0;
+                if (upperMinRange && underMaxRange) filteredList.add(m);
+            }
+        }
+        else if (hourFilter[1] == null) {
+            for (Meeting m : meetings) {
+                LocalTime endTimeMin = hourFilter[0].minusMinutes(1);
+                LocalTime endTimeMax = hourFilter[0].plusMinutes(1);
+                boolean upperMinRange = m.getStartTime().compareTo(endTimeMin) > 0;
+                boolean underMaxRange = m.getStartTime().compareTo(endTimeMax) < 0;
+                if (upperMinRange && underMaxRange) filteredList.add(m);
+            }
+        }
+        else {
+            for (Meeting m : meetings) {
+                LocalTime endTimeMin = hourFilter[0].minusMinutes(1);
+                LocalTime endTimeMax = hourFilter[1].plusMinutes(1);
+                boolean upperMinRange = m.getStartTime().compareTo(endTimeMin) > 0;
+                boolean underMaxRange = m.getStartTime().compareTo(endTimeMax) < 0;
+                if (upperMinRange && underMaxRange) filteredList.add(m);
+            }
+        }
+
+        return filteredList;
+    }
+
+    public void applyFilters() {
+        List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
+        filteredMeetings = applyRoomFilter(filteredMeetings);
+        filteredMeetings = applyHourFilter(filteredMeetings);
+        mMeetingsLiveData.setValue(filteredMeetings);
     }
 
     private boolean isValidEmailAddress(String email) {
