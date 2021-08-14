@@ -13,10 +13,24 @@ import java.util.List;
 public class MeetingRepository {
 
     private static final MeetingApiService service = DI.getMeetingApiService();
+    private List<Meeting> mMeetingsCache = new ArrayList<>();
 
-    public List<Meeting> getMeetings() { return service.getMeetings(); }
+    public List<Meeting> getCachedMeetings() {
+        return mMeetingsCache;
+    }
 
-    public void deleteMeeting(Meeting meeting) { service.deleteMeeting(meeting); }
+    public List<Meeting> fetchMeetings() {
+        mMeetingsCache = service.getMeetings();
+        return mMeetingsCache;
+    }
 
-    public void addMeeting(Meeting meeting) { service.addMeeting(meeting); }
+    public void deleteMeeting(Meeting meeting) {
+        service.deleteMeeting(meeting);
+        mMeetingsCache = service.getMeetings();
+    }
+
+    public void addMeeting(Meeting meeting) {
+        service.addMeeting(meeting);
+        mMeetingsCache = service.getMeetings();
+    }
 }

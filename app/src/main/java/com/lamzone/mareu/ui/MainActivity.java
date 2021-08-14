@@ -20,13 +20,21 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private MeetingViewModel mMeetingViewModel;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initUI();
+        initNavigationComponents();
+        initViewModel();
+    }
+
     private void initUI() {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         setSupportActionBar(mBinding.toolbar);
     }
 
-    private void initNavigationBar() {
+    private void initNavigationComponents() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
@@ -38,14 +46,5 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViewModel() {
         mMeetingViewModel = new ViewModelProvider(this).get(MeetingViewModel.class);
-        mMeetingViewModel.getMeetings();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initUI();
-        initNavigationBar();
-        initViewModel();
     }
 }

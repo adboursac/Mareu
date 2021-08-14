@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
-import com.lamzone.mareu.data.meeting.RoomSelectCommand;
+import com.lamzone.mareu.data.meeting.RoomFilterSelectCommand;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.FragmentRoomFilterBinding;
 
-public class RoomFilterFragment extends Fragment implements RoomSelectCommand {
+public class RoomFilterFragment extends Fragment implements RoomFilterSelectCommand {
 
     private Room[] mRooms;
     private boolean[] mSelected;
@@ -38,11 +38,17 @@ public class RoomFilterFragment extends Fragment implements RoomSelectCommand {
 
         initData();
         initRecyclerView(mBinding.getRoot());
-        initRoomFilter();
+        initRoomFilterObserver();
         initApplyButton();
         setHasOptionsMenu(true);
 
         return mBinding.getRoot();
+    }
+
+    private void initData() {
+        mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
+        mRooms = mMeetingViewModel.getRooms();
+        mSelected = mMeetingViewModel.getSelectedRoomsLiveData().getValue();
     }
 
     private void initRecyclerView(View root) {
@@ -54,23 +60,17 @@ public class RoomFilterFragment extends Fragment implements RoomSelectCommand {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void initData() {
-        mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
-        mRooms = mMeetingViewModel.getRooms();
-        mSelected = mMeetingViewModel.getSelectedRoomsLiveData().getValue();
-    }
-
-    private void initRoomFilter() {
+    private void initRoomFilterObserver() {
         mMeetingViewModel.getSelectedRoomsLiveData().observe(getViewLifecycleOwner(), selected -> {
             mSelected = selected;
             mRecyclerView.getAdapter().notifyDataSetChanged();
-            mMeetingViewModel.updateFilteredMeetings();
+            mMeetingViewModel.applyFilters();
         });
     }
 
     private void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
-            mMeetingViewModel.updateFilteredMeetings();
+            mMeetingViewModel.applyFilters();
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
         });
     }

@@ -17,7 +17,6 @@ public class MeetingViewModel extends ViewModel {
 
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
-    private List<Meeting> mMeetingsFullList;
     private MutableLiveData<LocalTime[]>  mHoursFilterLiveData;
     private MutableLiveData<boolean[]>  mSelectedRoomsLiveData;
     private int mSelectedRoomsCounter = 0;
@@ -27,6 +26,7 @@ public class MeetingViewModel extends ViewModel {
         mMeetingRepository = new MeetingRepository();
         mMeetingsLiveData = new MutableLiveData<>();
         mHoursFilterLiveData = new MutableLiveData<>();
+        fetchMeetings();
         initRoomFilter();
     }
 
@@ -39,9 +39,9 @@ public class MeetingViewModel extends ViewModel {
     public MutableLiveData<LocalTime[]> getHoursFilterLiveData() { return mHoursFilterLiveData; }
     public Room[] getRooms() { return mRooms; }
 
-    public void getMeetings() {
-        List<Meeting> meetings = mMeetingRepository.getMeetings();
-        mMeetingsFullList = meetings;
+
+    public void fetchMeetings() {
+        List<Meeting> meetings = mMeetingRepository.fetchMeetings();
         mMeetingsLiveData.setValue(meetings);
     }
 
@@ -60,10 +60,9 @@ public class MeetingViewModel extends ViewModel {
     }
 
     private void updateViewModelData() {
-        List<Meeting> meetings = mMeetingRepository.getMeetings();
-        mMeetingsFullList = meetings;
+        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
         mMeetingsLiveData.setValue(meetings);
-        updateFilteredMeetings();
+        applyFilters();
     }
 
     private int meetingValidTest(Meeting meeting) {
@@ -118,15 +117,16 @@ public class MeetingViewModel extends ViewModel {
         mSelectedRoomsLiveData.setValue(selectedRoomsList);
     }
 
-    public void updateFilteredMeetings() {
+    public void applyFilters() {
+        List<Meeting> cachedMeetings = mMeetingRepository.getCachedMeetings();
         if (mSelectedRoomsCounter == 0 || mSelectedRoomsCounter == mRooms.length) {
-            mMeetingsLiveData.setValue(mMeetingsFullList);
+            mMeetingsLiveData.setValue(cachedMeetings);
             return;
         }
 
         ArrayList<Meeting> filteredList = new ArrayList<>();
         boolean[] selected = mSelectedRoomsLiveData.getValue();
-        for (Meeting meeting : mMeetingsFullList) {
+        for (Meeting meeting : cachedMeetings) {
             int roomPosition = getRoomPosition(meeting.getRoom());
             if (selected[roomPosition]) filteredList.add(meeting);
         }

@@ -1,6 +1,8 @@
 package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +25,6 @@ public class HourFilterFragment extends Fragment {
 
         initData();
         initApplyButton();
-        TimePicker.setTimePickerOnTextInput(mBinding.startTimeInput, getParentFragmentManager());
-        TimePicker.setTimePickerOnTextInput(mBinding.endTimeInput, getParentFragmentManager());
         setHasOptionsMenu(true);
 
         return mBinding.getRoot();

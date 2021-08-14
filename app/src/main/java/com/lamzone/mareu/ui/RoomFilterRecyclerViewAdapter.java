@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lamzone.mareu.R;
-import com.lamzone.mareu.data.meeting.RoomSelectCommand;
+import com.lamzone.mareu.data.meeting.RoomFilterSelectCommand;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.RoomItemBinding;
 
@@ -16,10 +16,10 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
 
     private final Room[] mRooms;
     private boolean[] mSelected;
-    private RoomSelectCommand mSelectCommand;
+    private RoomFilterSelectCommand mSelectCommand;
     private Context mContext;
 
-    public RoomFilterRecyclerViewAdapter(Room[] rooms, boolean[] selected, RoomSelectCommand selectCommand) {
+    public RoomFilterRecyclerViewAdapter(Room[] rooms, boolean[] selected, RoomFilterSelectCommand selectCommand) {
         mRooms = rooms;
         mSelected = selected;
         mSelectCommand = selectCommand;
