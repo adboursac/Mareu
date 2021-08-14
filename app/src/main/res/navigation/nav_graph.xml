@@ -15,6 +15,9 @@
         <action
             android:id="@+id/navigateToRoomFilter"
             app:destination="@id/roomFilterFragment" />
+        <action
+            android:id="@+id/navigateToHourFilter"
+            app:destination="@id/hourFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragmentMeetingAdd"
@@ -30,6 +33,15 @@
         android:name="com.lamzone.mareu.ui.RoomFilterFragment"
         android:label="@string/filterRooms"
         tools:layout="@layout/fragment_room_filter" >
+        <action
+            android:id="@+id/navigateToMeetingList"
+            app:destination="@id/fragmentMeetingList" />
+    </fragment>
+    <fragment
+        android:id="@+id/hourFilterFragment"
+        android:name="com.lamzone.mareu.ui.HourFilterFragment"
+        android:label="@string/filterHours"
+        tools:layout="@layout/fragment_hour_filter" >
         <action
             android:id="@+id/navigateToMeetingList"
             app:destination="@id/fragmentMeetingList" />

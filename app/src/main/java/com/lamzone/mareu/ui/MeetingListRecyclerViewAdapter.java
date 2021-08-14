@@ -13,6 +13,7 @@ import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.MeetingItemBinding;
 
 import java.text.BreakIterator;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<MeetingListRecyclerViewAdapter.ViewHolder> {
@@ -48,9 +49,11 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         Meeting meeting = mMeetings.get(position);
         String roomName = mContext.getResources().getString(meeting.getRoom().getName());
         String roomLetter = Room.getLetter(roomName);
+        String time = meeting.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
         int roomColor = mContext.getResources().getColor(meeting.getRoom().getColor());
 
-        holder.mMeetingItemBinding.itemTitle.setText(meeting.getTitle());
+        String title = meeting.getTitle() + " • " + time + " • " + roomName;
+        holder.mMeetingItemBinding.itemTitle.setText(title);
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
         holder.mMeetingItemBinding.itemIconLetter.setText(roomLetter);
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));

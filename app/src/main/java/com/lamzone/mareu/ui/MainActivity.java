@@ -1,19 +1,13 @@
 package com.lamzone.mareu.ui;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
@@ -44,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViewModel() {
         mMeetingViewModel = new ViewModelProvider(this).get(MeetingViewModel.class);
-        mMeetingViewModel.fetchMeetings();
+        mMeetingViewModel.getMeetings();
     }
 
     @Override

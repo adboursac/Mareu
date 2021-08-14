@@ -1,34 +1,32 @@
 package com.lamzone.mareu.data.meeting;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BinaryOperator;
 
 public class MeetingViewModel extends ViewModel {
 
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
+    private List<Meeting> mMeetingsFullList;
+    private MutableLiveData<LocalTime[]>  mHoursFilterLiveData;
     private MutableLiveData<boolean[]>  mSelectedRoomsLiveData;
     private int mSelectedRoomsCounter = 0;
     private Room[] mRooms;
-    private List<Meeting> mMeetingsFullList;
-
 
     public MeetingViewModel() {
         mMeetingRepository = new MeetingRepository();
         mMeetingsLiveData = new MutableLiveData<>();
+        mHoursFilterLiveData = new MutableLiveData<>();
         initRoomFilter();
     }
 
@@ -38,39 +36,42 @@ public class MeetingViewModel extends ViewModel {
     public MutableLiveData<boolean[]> getSelectedRoomsLiveData() {
         return mSelectedRoomsLiveData;
     }
+    public MutableLiveData<LocalTime[]> getHoursFilterLiveData() { return mHoursFilterLiveData; }
     public Room[] getRooms() { return mRooms; }
 
-    public void fetchMeetings() {
+    public void getMeetings() {
         List<Meeting> meetings = mMeetingRepository.getMeetings();
         mMeetingsFullList = meetings;
         mMeetingsLiveData.setValue(meetings);
     }
 
-    public String addMeeting(Meeting meeting) {
-        String validationMessage = meetingValidTest(meeting);
-        if (validationMessage != null) return validationMessage;
+    public int addMeeting(Meeting meeting) {
+        int validationMessage = meetingValidTest(meeting);
+        if (validationMessage != 0) return validationMessage;
 
         mMeetingRepository.addMeeting(meeting);
-        updateData();
-        return null;
-    }
-
-    private String meetingValidTest(Meeting meeting) {
-        if (meeting.getTitle() == null || meeting.getTitle().length() < 2) return "@string:invalidTitle";
-        if (meeting.getRoom() == null) return "@string:invalidSelectRoom";
-        return null;
+        updateViewModelData();
+        return 0;
     }
 
     public void deleteMeeting(Meeting meeting) {
         mMeetingRepository.deleteMeeting(meeting);
-        updateData();
+        updateViewModelData();
     }
 
-    private void updateData() {
+    private void updateViewModelData() {
         List<Meeting> meetings = mMeetingRepository.getMeetings();
         mMeetingsFullList = meetings;
         mMeetingsLiveData.setValue(meetings);
         updateFilteredMeetings();
+    }
+
+    private int meetingValidTest(Meeting meeting) {
+        if (meeting.getTitle() == null || meeting.getTitle().length() < 2) return R.string.invalidMeetingTitle;
+        if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
+        if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
+        if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
+        return 0;
     }
 
     private void initRoomFilter() {
@@ -103,14 +104,14 @@ public class MeetingViewModel extends ViewModel {
         mSelectedRoomsLiveData.setValue(selectedRooms);
     }
 
-    public void filterClear() {
+    public void roomFilterClear() {
         boolean[] selectedRoomsList = mSelectedRoomsLiveData.getValue();
         Arrays.fill(selectedRoomsList, false);
         mSelectedRoomsCounter = 0;
         mSelectedRoomsLiveData.setValue(selectedRoomsList);
     }
 
-    public void filterSelectAll() {
+    public void roomFilterSelectAll() {
         boolean[] selectedRoomsList = mSelectedRoomsLiveData.getValue();
         Arrays.fill(selectedRoomsList, true);
         mSelectedRoomsCounter = mRooms.length;

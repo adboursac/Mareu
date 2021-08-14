@@ -35,11 +35,20 @@
         android:id="@+id/item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="22dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/item_room_icon"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/item_room_icon"
         app:layout_constraintTop_toTopOf="@+id/item_room_icon"/>
+
+    <TextView
+        android:id="@+id/item_members"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:text="@string/membersList"
+        app:layout_constraintBottom_toBottomOf="@+id/item_room_icon"
+        app:layout_constraintStart_toEndOf="@+id/item_room_icon"/>
 
     <ImageButton
         android:id="@+id/item_delete_button"

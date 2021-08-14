@@ -18,14 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.RoomSelectCommand;
-import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
-import com.lamzone.mareu.databinding.FragmentMeetingListBinding;
 import com.lamzone.mareu.databinding.FragmentRoomFilterBinding;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class RoomFilterFragment extends Fragment implements RoomSelectCommand {
 
@@ -90,10 +84,10 @@ public class RoomFilterFragment extends Fragment implements RoomSelectCommand {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.room_filter_select_all:
-                mMeetingViewModel.filterSelectAll();
+                mMeetingViewModel.roomFilterSelectAll();
                 break;
             default:
-                mMeetingViewModel.filterClear();
+                mMeetingViewModel.roomFilterClear();
         }
         return true;
     }

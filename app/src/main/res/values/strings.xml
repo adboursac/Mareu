@@ -4,14 +4,22 @@
     <string name="meetingList">Meeting list</string>
     <string name="addMeeting">Add a new meeting</string>
     <string name="editMeeting">Edit meeting</string>
-    <string name="fieldTitle">Meeting title</string>
+    <string name="meetingTitle">Meeting title</string>
     <string name="selectARoom">Select a room</string>
+    <string name="startTime">Start time</string>
+    <string name="endTime">End time</string>
     <string name="filterRooms">Filter by rooms</string>
     <string name="filterHours">Filter by hours</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
     <string name="selectAll">Select All</string>
     <string name="cancel">Cancel</string>
-    <string name="invalidSelectRoom">Please select a room</string>
-    <string name="invalidEmail">Please enter a valid email address</string>
+    <string name="membersList">Members List</string>
+    <string name="invalidMeetingTitle">The title must have at least two caracters</string>
+    <string name="invalidMeetingRoomEmpty">Please select a room</string>
+    <string name="invalidMeetingStartTimeEmpty">Please select a start time</string>
+    <string name="invalidMeetingEndTimeEmpty">Please select an end time</string>
+    <string name="invalidMeetingEmail">Some emails are invalid</string>
     <!-- Room names -->
     <string name="bowser">Bowser</string>
     <string name="donkey">Donkey</string>

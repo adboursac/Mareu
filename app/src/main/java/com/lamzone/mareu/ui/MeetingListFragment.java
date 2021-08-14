@@ -1,6 +1,7 @@
 package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -70,15 +72,6 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         });
     }
 
-    /*
-    @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.meeting_menu_filter_hour);
-        item.setVisible(false);
-    }
-     */
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.meeting_list_menu, menu);
@@ -86,7 +79,17 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.meeting_menu_filter_room) Navigation.findNavController(getView()).navigate(R.id.navigateToRoomFilter);
+        switch (item.getItemId()) {
+            case R.id.meeting_menu_filter_room:
+                Navigation.findNavController(getView()).navigate(R.id.navigateToRoomFilter);
+                break;
+            case R.id.meeting_menu_filter_hour:
+                Navigation.findNavController(getView()).navigate(R.id.navigateToHourFilter);
+                break;
+            default:
+                Log.w("MeetingListFragment","onOptionsItemSelected didn't match any menu item");
+                break;
+        }
         return true;
     }
 

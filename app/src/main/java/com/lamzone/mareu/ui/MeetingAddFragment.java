@@ -1,16 +1,23 @@
 package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
@@ -18,6 +25,8 @@ import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.FragmentMeetingAddBinding;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 
 public class MeetingAddFragment extends Fragment {
 
@@ -33,7 +42,9 @@ public class MeetingAddFragment extends Fragment {
 
         initData();
         initAddButton();
-        initRoomDropMenu(mBinding.roomDropDownMenu);
+        initRoomDropMenu(mBinding.roomInput);
+        TimePicker.setTimePickerOnTextInput(mBinding.startTimeInput, getChildFragmentManager());
+        TimePicker.setTimePickerOnTextInput(mBinding.endTimeInput, getChildFragmentManager());
         setHasOptionsMenu(true);
 
         return mBinding.getRoot();
@@ -45,13 +56,14 @@ public class MeetingAddFragment extends Fragment {
 
     public void initAddButton() {
         mBinding.addButton.setOnClickListener(v -> {
-            String validationMessage = mMeetingViewModel.addMeeting(generateMeeting());
+            int validationMessage = mMeetingViewModel.addMeeting(generateMeeting());
 
-            if (validationMessage == null) {
+            if (validationMessage == 0) {
                 Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
             }
             else {
-                Toast.makeText(getContext(), validationMessage, Toast.LENGTH_LONG).show();
+                String message = getResources().getString(validationMessage);
+                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -65,11 +77,12 @@ public class MeetingAddFragment extends Fragment {
     }
 
     private Meeting generateMeeting() {
-        Meeting meeting = new Meeting(
+        return new Meeting(
                 System.currentTimeMillis(),
-                mBinding.title.getText().toString(),
+                mBinding.titleInput.getText().toString(),
                 mSelectedRoom,
-                LocalTime.of(21, 30));
-        return meeting;
+                LocalTime.parse(mBinding.startTimeInput.getText().toString(), DateTimeFormatter.ofPattern("HH:mm")),
+                LocalTime.parse(mBinding.endTimeInput.getText().toString(), DateTimeFormatter.ofPattern("HH:mm"))
+        );
     }
 }
