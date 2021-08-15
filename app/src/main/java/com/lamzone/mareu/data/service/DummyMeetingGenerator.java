@@ -14,8 +14,8 @@ abstract class DummyMeetingGenerator {
                 new Meeting(
                         0,
                         "AAA Games",
-                        Room.Luigi, LocalTime.now(),
-                        LocalTime.now().plusMinutes(30),
+                        Room.Luigi, LocalTime.of(9,30),
+                        LocalTime.of(10,0),
                         new ArrayList<>(Arrays.asList(
                                 "nathan.drake@naughtydog.com",
                                 "sonic@sega.jp",

@@ -1,9 +1,9 @@
 package com.lamzone.mareu.data.meeting;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Patterns;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -19,10 +19,14 @@ import java.util.List;
 
 public class MeetingViewModel extends ViewModel {
 
+    public static final int FILTER_PRECISION = 6;
+    public static final int MEETING_MIN_DURATION = 15;
+    public static final int MEETING_MAX_DURATION = 120;
+
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
-    private MutableLiveData<LocalTime[]>  mHoursFilterLiveData;
-    private MutableLiveData<boolean[]>  mSelectedRoomsLiveData;
+    private MutableLiveData<LocalTime[]> mHoursFilterLiveData;
+    private MutableLiveData<boolean[]> mSelectedRoomsLiveData;
     private int mSelectedRoomsCounter = 0;
     private Room[] mRooms;
 
@@ -38,9 +42,18 @@ public class MeetingViewModel extends ViewModel {
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
         return mMeetingsLiveData;
     }
-    public MutableLiveData<boolean[]> getSelectedRoomsLiveData() { return mSelectedRoomsLiveData; }
-    public MutableLiveData<LocalTime[]> getHoursFilterLiveData() { return mHoursFilterLiveData; }
-    public Room[] getRooms() { return mRooms; }
+
+    public MutableLiveData<boolean[]> getSelectedRoomsLiveData() {
+        return mSelectedRoomsLiveData;
+    }
+
+    public MutableLiveData<LocalTime[]> getHoursFilterLiveData() {
+        return mHoursFilterLiveData;
+    }
+
+    public Room[] getRooms() {
+        return mRooms;
+    }
 
     public void fetchMeetings() {
         List<Meeting> meetings = mMeetingRepository.fetchMeetings();
@@ -68,10 +81,14 @@ public class MeetingViewModel extends ViewModel {
     }
 
     private int meetingValidTest(Meeting meeting) {
-        if (meeting.getTitle() == null || meeting.getTitle().length() < 2) return R.string.invalidMeetingTitle;
+        if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
+            return R.string.invalidMeetingTitle;
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
         if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
+        if (!validateHourRange(meeting)) return R.string.invalidMeetingTimeSlot;
+        if (!validateMinimumDuration(meeting)) return R.string.invalidMeetingMinDuration;
+        if (!validateMaximumDuration(meeting)) return R.string.invalidMeetingMaxDuration;
         if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
         return 0;
     }
@@ -84,7 +101,7 @@ public class MeetingViewModel extends ViewModel {
     }
 
     private int getRoomPosition(Room room) {
-        for (int i=0; i < mRooms.length; i++) {
+        for (int i = 0; i < mRooms.length; i++) {
             if (mRooms[i].getName() == room.getName()) return i;
         }
         return -1;
@@ -97,8 +114,7 @@ public class MeetingViewModel extends ViewModel {
         if (selectedRooms[position]) {
             mSelectedRoomsCounter--;
             selectedRooms[position] = false;
-        }
-        else {
+        } else {
             mSelectedRoomsCounter++;
             selectedRooms[position] = true;
         }
@@ -145,14 +161,17 @@ public class MeetingViewModel extends ViewModel {
     public void setHourRange(String from, String to) {
         LocalTime fromTime = stringToLocalTime(from);
         LocalTime toTime = stringToLocalTime(to);
-        LocalTime[] hourRange = new LocalTime[] {fromTime, toTime};
+        LocalTime[] hourRange = new LocalTime[]{fromTime, toTime};
         mHoursFilterLiveData.setValue(hourRange);
     }
 
     public LocalTime stringToLocalTime(String timeString) {
         LocalTime time;
-        try { time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm")); }
-        catch (Exception e) { time = null; }
+        try {
+            time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm"));
+        } catch (Exception e) {
+            time = null;
+        }
         return time;
     }
 
@@ -182,28 +201,26 @@ public class MeetingViewModel extends ViewModel {
 
         if (hourFilter[0] == null) {
             for (Meeting m : meetings) {
-                LocalTime endTimeMin = hourFilter[1].minusMinutes(1);
-                LocalTime endTimeMax = hourFilter[1].plusMinutes(1);
-                boolean upperMinRange = m.getEndTime().compareTo(endTimeMin) > 0;
-                boolean underMaxRange = m.getEndTime().compareTo(endTimeMax) < 0;
+                LocalTime endTimeMin = hourFilter[1].minusMinutes(FILTER_PRECISION);
+                LocalTime endTimeMax = hourFilter[1].plusMinutes(FILTER_PRECISION);
+                boolean upperMinRange = m.getEndTime().isAfter(endTimeMin);
+                boolean underMaxRange = m.getEndTime().isBefore(endTimeMax);
                 if (upperMinRange && underMaxRange) filteredList.add(m);
             }
-        }
-        else if (hourFilter[1] == null) {
+        } else if (hourFilter[1] == null) {
             for (Meeting m : meetings) {
-                LocalTime endTimeMin = hourFilter[0].minusMinutes(1);
-                LocalTime endTimeMax = hourFilter[0].plusMinutes(1);
-                boolean upperMinRange = m.getStartTime().compareTo(endTimeMin) > 0;
-                boolean underMaxRange = m.getStartTime().compareTo(endTimeMax) < 0;
+                LocalTime startTimeMin = hourFilter[0].minusMinutes(FILTER_PRECISION);
+                LocalTime startTimeMax = hourFilter[0].plusMinutes(FILTER_PRECISION);
+                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
+                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
                 if (upperMinRange && underMaxRange) filteredList.add(m);
             }
-        }
-        else {
+        } else {
             for (Meeting m : meetings) {
-                LocalTime endTimeMin = hourFilter[0].minusMinutes(1);
-                LocalTime endTimeMax = hourFilter[1].plusMinutes(1);
-                boolean upperMinRange = m.getStartTime().compareTo(endTimeMin) > 0;
-                boolean underMaxRange = m.getStartTime().compareTo(endTimeMax) < 0;
+                LocalTime startTimeMin = hourFilter[0].minusMinutes(1);
+                LocalTime startTimeMax = hourFilter[1].plusMinutes(1);
+                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
+                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
                 if (upperMinRange && underMaxRange) filteredList.add(m);
             }
         }
@@ -221,6 +238,30 @@ public class MeetingViewModel extends ViewModel {
     public boolean validateEmail(String text) {
         if (!text.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(text).matches()) return true;
         else return false;
+    }
+
+    public boolean validateHourRange(Meeting meeting) {
+        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
+        for (Meeting m : meetings) {
+            if (meeting.getRoom() == m.getRoom() &&
+                    (meeting.getStartTime().equals(m.getStartTime()) ||
+                            (meeting.getStartTime().isBefore(m.getEndTime()) &&
+                                    meeting.getEndTime().isAfter(m.getStartTime())
+                            )
+                    )
+            ) return false;
+        }
+        return true;
+    }
+
+    public boolean validateMinimumDuration(Meeting meeting) {
+        LocalTime minimumEndTime = meeting.getStartTime().plusMinutes(MEETING_MIN_DURATION);
+        return ! meeting.getEndTime().isBefore(minimumEndTime);
+    }
+
+    public boolean validateMaximumDuration(Meeting meeting) {
+        LocalTime maximumEndTime = meeting.getStartTime().plusMinutes(MEETING_MAX_DURATION);
+        return ! meeting.getEndTime().isAfter(maximumEndTime);
     }
 
     public static String listToString(List<String> list, String separator) {
