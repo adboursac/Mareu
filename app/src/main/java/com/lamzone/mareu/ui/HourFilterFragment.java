@@ -45,11 +45,11 @@ public class HourFilterFragment extends Fragment {
     }
 
     private void initHourPickers() {
-        mBinding.fromTimeInput.setText(mMeetingViewModel.getFromTimeString(getContext()));
+        mBinding.fromTimeInput.setText(mMeetingViewModel.getHourFilterFromTimeString(getContext()));
         mBinding.fromTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
         TimePicker.setTimePickerOnTextInput(mBinding.fromTimeInput, getParentFragmentManager());
 
-        mBinding.toTimeInput.setText(mMeetingViewModel.getToTimeString(getContext()));
+        mBinding.toTimeInput.setText(mMeetingViewModel.getHourFilterToTimeString(getContext()));
         mBinding.toTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
         TimePicker.setTimePickerOnTextInput(mBinding.toTimeInput, getParentFragmentManager());
     }

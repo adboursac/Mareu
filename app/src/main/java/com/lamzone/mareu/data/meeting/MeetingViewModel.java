@@ -1,7 +1,6 @@
 package com.lamzone.mareu.data.meeting;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Patterns;
 
 import androidx.lifecycle.MutableLiveData;
@@ -18,10 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MeetingViewModel extends ViewModel {
-
-    public static final int FILTER_PRECISION = 6;
-    public static final int MEETING_MIN_DURATION = 15;
-    public static final int MEETING_MAX_DURATION = 120;
 
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
@@ -60,13 +55,9 @@ public class MeetingViewModel extends ViewModel {
         mMeetingsLiveData.setValue(meetings);
     }
 
-    public int addMeeting(Meeting meeting) {
-        int validationMessage = meetingValidTest(meeting);
-        if (validationMessage != 0) return validationMessage;
-
+    public void addMeeting(Meeting meeting) {
         mMeetingRepository.addMeeting(meeting);
         updateViewModelData();
-        return 0;
     }
 
     public void deleteMeeting(Meeting meeting) {
@@ -80,15 +71,37 @@ public class MeetingViewModel extends ViewModel {
         applyFilters();
     }
 
-    private int meetingValidTest(Meeting meeting) {
-        if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
-            return R.string.invalidMeetingTitle;
+    public String checkMeeting(Meeting meeting, Context context) {
+        int messageId = checkRoomRelatedFields(meeting);
+        if (messageId != 0) return context.getResources().getString(messageId);
+
+        List<Meeting> updatedMeetingList = mMeetingRepository.fetchMeetings();
+        Meeting overlappingMeeting = MeetingTimeHelper.checkTimeSlot(meeting, updatedMeetingList);
+        if (overlappingMeeting != null) return
+                context.getResources().getString(R.string.invalidMeetingTimeSlot)
+                        + "\n" + meetingTimeSlotToString(overlappingMeeting);
+
+        messageId = checkNonRoomRelatedFields(meeting);
+        if (messageId != 0) return context.getResources().getString(messageId);
+
+        return "";
+    }
+
+    private String meetingTimeSlotToString(Meeting meeting) {
+        return formatTime(meeting.getStartTime()) +
+                " - " + formatTime(meeting.getEndTime());
+    }
+
+    private int checkRoomRelatedFields(Meeting meeting) {
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
         if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
-        if (!validateHourRange(meeting)) return R.string.invalidMeetingTimeSlot;
-        if (!validateMinimumDuration(meeting)) return R.string.invalidMeetingMinDuration;
-        if (!validateMaximumDuration(meeting)) return R.string.invalidMeetingMaxDuration;
+        return MeetingTimeHelper.checkEndTime(meeting);
+    }
+
+    private int checkNonRoomRelatedFields(Meeting meeting) {
+        if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
+            return R.string.invalidMeetingTitle;
         if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
         return 0;
     }
@@ -142,17 +155,17 @@ public class MeetingViewModel extends ViewModel {
         mHoursFilterLiveData = new MutableLiveData<>(hourRange);
     }
 
-    public String getFromTimeString(Context context) {
+    public String getHourFilterFromTimeString(Context context) {
         LocalTime fromTime = mHoursFilterLiveData.getValue()[0];
-        if (fromTime != null) return fromTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        if (fromTime != null) return formatTime(fromTime);
         else {
             return context.getResources().getString(R.string.from);
         }
     }
 
-    public String getToTimeString(Context context) {
+    public String getHourFilterToTimeString(Context context) {
         LocalTime endTime = mHoursFilterLiveData.getValue()[1];
-        if (endTime != null) return endTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        if (endTime != null) return formatTime(endTime);
         else {
             return context.getResources().getString(R.string.to);
         }
@@ -191,77 +204,16 @@ public class MeetingViewModel extends ViewModel {
         return filteredList;
     }
 
-    public List<Meeting> applyHourFilter(List<Meeting> meetings) {
-        LocalTime[] hourFilter = mHoursFilterLiveData.getValue();
-        if (hourFilter[0] == null && hourFilter[1] == null) {
-            return meetings;
-        }
-
-        ArrayList<Meeting> filteredList = new ArrayList<>();
-
-        if (hourFilter[0] == null) {
-            for (Meeting m : meetings) {
-                LocalTime endTimeMin = hourFilter[1].minusMinutes(FILTER_PRECISION);
-                LocalTime endTimeMax = hourFilter[1].plusMinutes(FILTER_PRECISION);
-                boolean upperMinRange = m.getEndTime().isAfter(endTimeMin);
-                boolean underMaxRange = m.getEndTime().isBefore(endTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        } else if (hourFilter[1] == null) {
-            for (Meeting m : meetings) {
-                LocalTime startTimeMin = hourFilter[0].minusMinutes(FILTER_PRECISION);
-                LocalTime startTimeMax = hourFilter[0].plusMinutes(FILTER_PRECISION);
-                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
-                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        } else {
-            for (Meeting m : meetings) {
-                LocalTime startTimeMin = hourFilter[0].minusMinutes(1);
-                LocalTime startTimeMax = hourFilter[1].plusMinutes(1);
-                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
-                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        }
-
-        return filteredList;
-    }
-
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = applyHourFilter(filteredMeetings);
+        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mHoursFilterLiveData.getValue());
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 
-    public boolean validateEmail(String text) {
+    public boolean checkEmail(String text) {
         if (!text.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(text).matches()) return true;
         else return false;
-    }
-
-    public boolean validateHourRange(Meeting meeting) {
-        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
-        for (Meeting m : meetings) {
-            if (meeting.getRoom() == m.getRoom() &&
-                    (meeting.getStartTime().equals(m.getStartTime()) ||
-                            (meeting.getStartTime().isBefore(m.getEndTime()) &&
-                                    meeting.getEndTime().isAfter(m.getStartTime())
-                            )
-                    )
-            ) return false;
-        }
-        return true;
-    }
-
-    public boolean validateMinimumDuration(Meeting meeting) {
-        LocalTime minimumEndTime = meeting.getStartTime().plusMinutes(MEETING_MIN_DURATION);
-        return ! meeting.getEndTime().isBefore(minimumEndTime);
-    }
-
-    public boolean validateMaximumDuration(Meeting meeting) {
-        LocalTime maximumEndTime = meeting.getStartTime().plusMinutes(MEETING_MAX_DURATION);
-        return ! meeting.getEndTime().isAfter(maximumEndTime);
     }
 
     public static String listToString(List<String> list, String separator) {
@@ -271,5 +223,9 @@ public class MeetingViewModel extends ViewModel {
             if (i + 1 < list.size()) text += separator;
         }
         return text;
+    }
+
+    private String formatTime(LocalTime time) {
+        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }

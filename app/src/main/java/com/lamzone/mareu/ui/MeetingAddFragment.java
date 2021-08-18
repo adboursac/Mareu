@@ -1,40 +1,25 @@
 package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
-import android.os.PatternMatcher;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.FragmentMeetingAddBinding;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class MeetingAddFragment extends Fragment {
@@ -45,9 +30,9 @@ public class MeetingAddFragment extends Fragment {
     private List<String> mMemberList = new ArrayList<>();
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         mBinding = FragmentMeetingAddBinding.inflate(inflater, container, false);
 
         initData();
@@ -67,14 +52,14 @@ public class MeetingAddFragment extends Fragment {
 
     public void initAddButton() {
         mBinding.addButton.setOnClickListener(v -> {
-            int validationMessage = mMeetingViewModel.addMeeting(generateMeeting());
+            Meeting meeting = generateMeeting();
+            String resultMessage = mMeetingViewModel.checkMeeting(meeting, getContext());
 
-            if (validationMessage == 0) {
+            if (resultMessage == "") {
+                mMeetingViewModel.addMeeting(meeting);
                 Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
-            }
-            else {
-                String message = getResources().getString(validationMessage);
-                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), resultMessage, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -108,17 +93,19 @@ public class MeetingAddFragment extends Fragment {
     private TextWatcher createTextWatcher() {
         return new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                boolean isEmailValid = mMeetingViewModel.validateEmail(s.toString());
+                boolean isEmailValid = mMeetingViewModel.checkEmail(s.toString());
                 if (isEmailValid) mBinding.memberMailLayout.setEndIconVisible(true);
                 else mBinding.memberMailLayout.setEndIconVisible(false);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         };
     }
 

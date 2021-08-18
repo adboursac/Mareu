@@ -21,9 +21,11 @@
     <string name="invalidMeetingStartTimeEmpty">Please select a start time</string>
     <string name="invalidMeetingEndTimeEmpty">Please select an end time</string>
     <string name="invalidMeetingMiniumTwoMembers">At least two emails are required</string>
-    <string name="invalidMeetingTimeSlot">Time slot is already reserved for this room</string>
+    <string name="invalidMeetingTimeSlot">Room is already reserved with:</string>
     <string name="invalidMeetingMinDuration">Meeting is below minimum duration</string>
     <string name="invalidMeetingMaxDuration">Meeting is above maximum duration</string>
+    <string name="invalidMeetingEndAfterMidnight">Meeting can\'t end after midnight</string>
+    <string name="invalidMeetingEndsBeforeItStarts">Meeting can\'t end before it starts</string>
 
     <!-- Room names -->
     <string name="bowser">Bowser</string>

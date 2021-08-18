@@ -54,7 +54,7 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         int roomColor = mContext.getResources().getColor(meeting.getRoom().getColor());
 
         String title = meeting.getTitle() + " • " + time + " • " + roomName;
-        String memberList =  MeetingViewModel.listToString(meeting.getMemberList(), ", ");
+        String memberList = MeetingViewModel.listToString(meeting.getMemberList(), ", ");
         holder.mMeetingItemBinding.itemTitle.setText(title);
         holder.mMeetingItemBinding.itemMembers.setText(memberList);
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
