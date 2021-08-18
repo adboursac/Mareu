@@ -21,7 +21,7 @@ public class MeetingViewModel extends ViewModel {
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
 
-    private MutableLiveData<LocalTime[]> mTimeFilter;
+    private LocalTime[] mTimeFilter;
 
     private boolean[] mRoomFilter;
     private Room[] mRooms;
@@ -30,16 +30,15 @@ public class MeetingViewModel extends ViewModel {
     public MeetingViewModel() {
         mMeetingRepository = new MeetingRepository();
         mMeetingsLiveData = new MutableLiveData<>();
-        mTimeFilter = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
-        initHourFilter();
+        initTimeFilter();
     }
 
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
         return mMeetingsLiveData;
     }
-    public MutableLiveData<LocalTime[]> getTimeFilter() {
+    public LocalTime[] getTimeFilter() {
         return mTimeFilter;
     }
 
@@ -132,22 +131,21 @@ public class MeetingViewModel extends ViewModel {
         return filteredList;
     }
 
-    private void initHourFilter() {
-        LocalTime[] hourRange = new LocalTime[2];
-        Arrays.fill(hourRange, null);
-        mTimeFilter = new MutableLiveData<>(hourRange);
+    private void initTimeFilter() {
+        mTimeFilter = new LocalTime[2];
+        Arrays.fill(mTimeFilter, null);
     }
 
-    public String getHourFilterFromTimeString(Context context) {
-        LocalTime fromTime = mTimeFilter.getValue()[0];
+    public String getFromTimeString(Context context) {
+        LocalTime fromTime = mTimeFilter[0];
         if (fromTime != null) return formatTime(fromTime);
         else {
             return context.getResources().getString(R.string.from);
         }
     }
 
-    public String getHourFilterToTimeString(Context context) {
-        LocalTime endTime = mTimeFilter.getValue()[1];
+    public String getToTimeString(Context context) {
+        LocalTime endTime = mTimeFilter[1];
         if (endTime != null) return formatTime(endTime);
         else {
             return context.getResources().getString(R.string.to);
@@ -159,11 +157,14 @@ public class MeetingViewModel extends ViewModel {
                 " - " + formatTime(meeting.getEndTime());
     }
 
-    public void setHourRange(String from, String to) {
+    public void setTimeFilter(String from, String to) {
         LocalTime fromTime = stringToLocalTime(from);
         LocalTime toTime = stringToLocalTime(to);
-        LocalTime[] hourRange = new LocalTime[]{fromTime, toTime};
-        mTimeFilter.setValue(hourRange);
+        mTimeFilter = new LocalTime[]{fromTime, toTime};
+    }
+
+    private String formatTime(LocalTime time) {
+        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     public LocalTime stringToLocalTime(String timeString) {
@@ -179,7 +180,7 @@ public class MeetingViewModel extends ViewModel {
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mTimeFilter.getValue());
+        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mTimeFilter);
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 
@@ -195,9 +196,5 @@ public class MeetingViewModel extends ViewModel {
             if (i + 1 < list.size()) text += separator;
         }
         return text;
-    }
-
-    private String formatTime(LocalTime time) {
-        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }

@@ -39,7 +39,7 @@
     </fragment>
     <fragment
         android:id="@+id/hourFilterFragment"
-        android:name="com.lamzone.mareu.ui.HourFilterFragment"
+        android:name="com.lamzone.mareu.ui.TimeFilterFragment"
         android:label="@string/filterHours"
         tools:layout="@layout/fragment_hour_filter" >
         <action

@@ -20,7 +20,7 @@ import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.databinding.FragmentHourFilterBinding;
 
-public class HourFilterFragment extends Fragment {
+public class TimeFilterFragment extends Fragment {
 
     private MeetingViewModel mMeetingViewModel;
     private FragmentHourFilterBinding mBinding;
@@ -33,7 +33,6 @@ public class HourFilterFragment extends Fragment {
 
         initData();
         initHourPickers();
-        initHoursFilterObserver();
         initApplyButton();
         setHasOptionsMenu(true);
 
@@ -45,41 +44,22 @@ public class HourFilterFragment extends Fragment {
     }
 
     private void initHourPickers() {
-        mBinding.fromTimeInput.setText(mMeetingViewModel.getHourFilterFromTimeString(getContext()));
-        mBinding.fromTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
+        mBinding.fromTimeInput.setText(mMeetingViewModel.getFromTimeString(getContext()));
         TimePicker.setTimePickerOnTextInput(mBinding.fromTimeInput, getParentFragmentManager());
 
-        mBinding.toTimeInput.setText(mMeetingViewModel.getHourFilterToTimeString(getContext()));
-        mBinding.toTimeInput.addTextChangedListener(createTextWatcher(mBinding.fromTimeInput, mBinding.toTimeInput));
+        mBinding.toTimeInput.setText(mMeetingViewModel.getToTimeString(getContext()));
         TimePicker.setTimePickerOnTextInput(mBinding.toTimeInput, getParentFragmentManager());
-    }
-
-    private void initHoursFilterObserver() {
-        mMeetingViewModel.getTimeFilter().observe(getViewLifecycleOwner(), hourRange -> {
-            mMeetingViewModel.applyFilters();
-        });
     }
 
     public void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
+            mMeetingViewModel.setTimeFilter(
+                    mBinding.fromTimeInput.getText().toString(),
+                    mBinding.toTimeInput.getText().toString()
+            );
             mMeetingViewModel.applyFilters();
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
         });
-    }
-
-    private TextWatcher createTextWatcher(TextInputEditText from, TextInputEditText to) {
-        return new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mMeetingViewModel.setHourRange(from.getText().toString(), to.getText().toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        };
     }
 
     @Override
