@@ -64,7 +64,7 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
             holder.itemView.setBackgroundColor(whiteColor);
         }
 
-        holder.itemView.setOnClickListener(v -> mSelectCommand.selectRoom(room));
+        holder.itemView.setOnClickListener(v -> mSelectCommand.selectRoom(position));
     }
 
     @Override

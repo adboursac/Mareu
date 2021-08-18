@@ -98,7 +98,7 @@ public class MeetingAddFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                boolean isEmailValid = mMeetingViewModel.checkEmail(s.toString());
+                boolean isEmailValid = mMeetingViewModel.isEmailValid(s.toString());
                 if (isEmailValid) mBinding.memberMailLayout.setEndIconVisible(true);
                 else mBinding.memberMailLayout.setEndIconVisible(false);
             }

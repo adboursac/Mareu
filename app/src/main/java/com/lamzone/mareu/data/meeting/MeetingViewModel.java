@@ -20,15 +20,17 @@ public class MeetingViewModel extends ViewModel {
 
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
-    private MutableLiveData<LocalTime[]> mHoursFilterLiveData;
-    private MutableLiveData<boolean[]> mSelectedRoomsLiveData;
-    private int mSelectedRoomsCounter = 0;
+
+    private MutableLiveData<LocalTime[]> mTimeFilter;
+
+    private boolean[] mRoomFilter;
     private Room[] mRooms;
+    private boolean mEmptyRoomFilter;
 
     public MeetingViewModel() {
         mMeetingRepository = new MeetingRepository();
         mMeetingsLiveData = new MutableLiveData<>();
-        mHoursFilterLiveData = new MutableLiveData<>();
+        mTimeFilter = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
         initHourFilter();
@@ -37,18 +39,20 @@ public class MeetingViewModel extends ViewModel {
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
         return mMeetingsLiveData;
     }
-
-    public MutableLiveData<boolean[]> getSelectedRoomsLiveData() {
-        return mSelectedRoomsLiveData;
-    }
-
-    public MutableLiveData<LocalTime[]> getHoursFilterLiveData() {
-        return mHoursFilterLiveData;
+    public MutableLiveData<LocalTime[]> getTimeFilter() {
+        return mTimeFilter;
     }
 
     public Room[] getRooms() {
         return mRooms;
     }
+    public boolean[] getRoomFilter() { return mRoomFilter; }
+    public void setRoomFilter(boolean[] roomFilter) {
+        setEmptyRoomFilter(false);
+        mRoomFilter = roomFilter;
+    }
+    public boolean isEmptyRoomFilter() { return mEmptyRoomFilter; }
+    public void setEmptyRoomFilter(boolean emptyRoomFilter) { mEmptyRoomFilter = emptyRoomFilter; }
 
     public void fetchMeetings() {
         List<Meeting> meetings = mMeetingRepository.fetchMeetings();
@@ -87,11 +91,6 @@ public class MeetingViewModel extends ViewModel {
         return "";
     }
 
-    private String meetingTimeSlotToString(Meeting meeting) {
-        return formatTime(meeting.getStartTime()) +
-                " - " + formatTime(meeting.getEndTime());
-    }
-
     private int checkRoomRelatedFields(Meeting meeting) {
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
@@ -108,9 +107,9 @@ public class MeetingViewModel extends ViewModel {
 
     private void initRoomFilter() {
         mRooms = Room.values();
-        boolean[] selectedRoomsList = new boolean[mRooms.length];
-        Arrays.fill(selectedRoomsList, false);
-        mSelectedRoomsLiveData = new MutableLiveData<>(selectedRoomsList);
+        mRoomFilter = new boolean[mRooms.length];
+        mEmptyRoomFilter = true;
+        Arrays.fill(mRoomFilter, false);
     }
 
     private int getRoomPosition(Room room) {
@@ -120,43 +119,27 @@ public class MeetingViewModel extends ViewModel {
         return -1;
     }
 
-    public void toggleRoomState(Room room) {
-        boolean[] selectedRooms = mSelectedRoomsLiveData.getValue();
-        int position = getRoomPosition(room);
+    public List<Meeting> applyRoomFilter(List<Meeting> meetings) {
+        if (mEmptyRoomFilter) return meetings;
 
-        if (selectedRooms[position]) {
-            mSelectedRoomsCounter--;
-            selectedRooms[position] = false;
-        } else {
-            mSelectedRoomsCounter++;
-            selectedRooms[position] = true;
+        ArrayList<Meeting> filteredList = new ArrayList<>();
+        for (Meeting m : meetings) {
+            int roomPosition = getRoomPosition(m.getRoom());
+            if (mRoomFilter[roomPosition]) {
+                filteredList.add(m);
+            }
         }
-
-        mSelectedRoomsLiveData.setValue(selectedRooms);
-    }
-
-    public void roomFilterClear() {
-        boolean[] selectedRoomsList = mSelectedRoomsLiveData.getValue();
-        Arrays.fill(selectedRoomsList, false);
-        mSelectedRoomsCounter = 0;
-        mSelectedRoomsLiveData.setValue(selectedRoomsList);
-    }
-
-    public void roomFilterSelectAll() {
-        boolean[] selectedRoomsList = mSelectedRoomsLiveData.getValue();
-        Arrays.fill(selectedRoomsList, true);
-        mSelectedRoomsCounter = mRooms.length;
-        mSelectedRoomsLiveData.setValue(selectedRoomsList);
+        return filteredList;
     }
 
     private void initHourFilter() {
         LocalTime[] hourRange = new LocalTime[2];
         Arrays.fill(hourRange, null);
-        mHoursFilterLiveData = new MutableLiveData<>(hourRange);
+        mTimeFilter = new MutableLiveData<>(hourRange);
     }
 
     public String getHourFilterFromTimeString(Context context) {
-        LocalTime fromTime = mHoursFilterLiveData.getValue()[0];
+        LocalTime fromTime = mTimeFilter.getValue()[0];
         if (fromTime != null) return formatTime(fromTime);
         else {
             return context.getResources().getString(R.string.from);
@@ -164,18 +147,23 @@ public class MeetingViewModel extends ViewModel {
     }
 
     public String getHourFilterToTimeString(Context context) {
-        LocalTime endTime = mHoursFilterLiveData.getValue()[1];
+        LocalTime endTime = mTimeFilter.getValue()[1];
         if (endTime != null) return formatTime(endTime);
         else {
             return context.getResources().getString(R.string.to);
         }
     }
 
+    private String meetingTimeSlotToString(Meeting meeting) {
+        return formatTime(meeting.getStartTime()) +
+                " - " + formatTime(meeting.getEndTime());
+    }
+
     public void setHourRange(String from, String to) {
         LocalTime fromTime = stringToLocalTime(from);
         LocalTime toTime = stringToLocalTime(to);
         LocalTime[] hourRange = new LocalTime[]{fromTime, toTime};
-        mHoursFilterLiveData.setValue(hourRange);
+        mTimeFilter.setValue(hourRange);
     }
 
     public LocalTime stringToLocalTime(String timeString) {
@@ -188,30 +176,14 @@ public class MeetingViewModel extends ViewModel {
         return time;
     }
 
-    public List<Meeting> applyRoomFilter(List<Meeting> meetings) {
-        if (mSelectedRoomsCounter == 0 || mSelectedRoomsCounter == mRooms.length) {
-            return meetings;
-        }
-
-        ArrayList<Meeting> filteredList = new ArrayList<>();
-
-        boolean[] selected = mSelectedRoomsLiveData.getValue();
-        for (Meeting m : meetings) {
-            int roomPosition = getRoomPosition(m.getRoom());
-            if (selected[roomPosition]) filteredList.add(m);
-        }
-
-        return filteredList;
-    }
-
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mHoursFilterLiveData.getValue());
+        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mTimeFilter.getValue());
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 
-    public boolean checkEmail(String text) {
+    public boolean isEmailValid(String text) {
         if (!text.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(text).matches()) return true;
         else return false;
     }

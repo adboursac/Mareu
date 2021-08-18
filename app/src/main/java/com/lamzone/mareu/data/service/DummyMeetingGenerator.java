@@ -12,7 +12,7 @@ public abstract class DummyMeetingGenerator {
     public static List<Meeting> DUMMY_MEETINGS = Arrays.asList(
             new Meeting(
                     0,
-                    "LamApp Keynote",
+                    "Lame Keynote",
                     Room.Luigi, LocalTime.of(9, 30),
                     LocalTime.of(11, 30),
                     new ArrayList<>(Arrays.asList(

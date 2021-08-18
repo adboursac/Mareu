@@ -55,7 +55,7 @@ public class HourFilterFragment extends Fragment {
     }
 
     private void initHoursFilterObserver() {
-        mMeetingViewModel.getHoursFilterLiveData().observe(getViewLifecycleOwner(), hourRange -> {
+        mMeetingViewModel.getTimeFilter().observe(getViewLifecycleOwner(), hourRange -> {
             mMeetingViewModel.applyFilters();
         });
     }

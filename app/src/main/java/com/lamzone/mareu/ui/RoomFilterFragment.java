@@ -22,10 +22,13 @@ import com.lamzone.mareu.data.meeting.RoomFilterSelectCommand;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.FragmentRoomFilterBinding;
 
+import java.util.Arrays;
+
 public class RoomFilterFragment extends Fragment implements RoomFilterSelectCommand {
 
     private Room[] mRooms;
-    private boolean[] mSelected;
+    private boolean[] mRoomFilter;
+    private boolean mEmptyRoomFilter;
     private MeetingViewModel mMeetingViewModel;
 
     private FragmentRoomFilterBinding mBinding;
@@ -39,7 +42,6 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
 
         initData();
         initRecyclerView(mBinding.getRoot());
-        initRoomFilterObserver();
         initApplyButton();
         setHasOptionsMenu(true);
 
@@ -49,7 +51,8 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
     private void initData() {
         mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
         mRooms = mMeetingViewModel.getRooms();
-        mSelected = mMeetingViewModel.getSelectedRoomsLiveData().getValue();
+        mRoomFilter = mMeetingViewModel.getRoomFilter().clone();
+        mEmptyRoomFilter = mMeetingViewModel.isEmptyRoomFilter();
     }
 
     private void initRecyclerView(View root) {
@@ -57,20 +60,14 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
 
-        RoomFilterRecyclerViewAdapter mAdapter = new RoomFilterRecyclerViewAdapter(mRooms, mSelected, this);
+        RoomFilterRecyclerViewAdapter mAdapter = new RoomFilterRecyclerViewAdapter(mRooms, mRoomFilter, this);
         mRecyclerView.setAdapter(mAdapter);
-    }
-
-    private void initRoomFilterObserver() {
-        mMeetingViewModel.getSelectedRoomsLiveData().observe(getViewLifecycleOwner(), selected -> {
-            mSelected = selected;
-            mRecyclerView.getAdapter().notifyDataSetChanged();
-            mMeetingViewModel.applyFilters();
-        });
     }
 
     private void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
+            mMeetingViewModel.setRoomFilter(mRoomFilter);
+            mMeetingViewModel.setEmptyRoomFilter(mEmptyRoomFilter);
             mMeetingViewModel.applyFilters();
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
         });
@@ -81,14 +78,19 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
         inflater.inflate(R.menu.room_filter_menu, menu);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.room_filter_select_all:
-                mMeetingViewModel.roomFilterSelectAll();
+                Arrays.fill(mRoomFilter, true);
+                mEmptyRoomFilter = true;
+                mRecyclerView.getAdapter().notifyDataSetChanged();
                 break;
             case R.id.room_filter_cancel:
-                mMeetingViewModel.roomFilterClear();
+                Arrays.fill(mRoomFilter, false);
+                mEmptyRoomFilter = true;
+                mRecyclerView.getAdapter().notifyDataSetChanged();
                 break;
             default:
                 Log.w("RoomFilterFragment","onOptionsItemSelected: didn't match any menu item");
@@ -97,8 +99,10 @@ public class RoomFilterFragment extends Fragment implements RoomFilterSelectComm
     }
 
     @Override
-    public void selectRoom(Room room) {
-        mMeetingViewModel.toggleRoomState(room);
+    public void selectRoom(int position) {
+        mRoomFilter[position] = ! mRoomFilter[position];
+        mEmptyRoomFilter = false;
+        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 }
 

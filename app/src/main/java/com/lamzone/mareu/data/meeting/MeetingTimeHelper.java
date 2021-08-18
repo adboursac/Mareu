@@ -1,7 +1,5 @@
 package com.lamzone.mareu.data.meeting;
 
-import android.os.LocaleList;
-
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 
