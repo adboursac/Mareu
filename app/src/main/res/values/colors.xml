@@ -7,6 +7,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FFCE0A25</color>
     <color name="grey">#505461</color>
+    <color name="textDark">#606060</color>
     <!-- Rooms colors -->
     <color name="bowser">#30293E</color>
     <color name="donkey">#E4710D</color>

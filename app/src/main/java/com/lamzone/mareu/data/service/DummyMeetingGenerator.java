@@ -16,7 +16,7 @@ public abstract class DummyMeetingGenerator {
                     Room.Luigi, LocalTime.of(9, 30),
                     LocalTime.of(11, 30),
                     new ArrayList<>(Arrays.asList(
-                            "jenna@lamzone.com",
+                            "martine@lamzone.com",
                             "kad@lamzone.com",
                             "olvier@lamzone.com"
                     ))
@@ -28,7 +28,7 @@ public abstract class DummyMeetingGenerator {
                     Room.Mario, LocalTime.of(11, 15),
                     LocalTime.of(12, 0),
                     new ArrayList<>(Arrays.asList(
-                            "nathan.drake@naughtydog.com",
+                            "miyamoto@nintendo.jp",
                             "sonic@sega.jp",
                             "didi.kong@nintendo.jp"
                     ))
@@ -76,9 +76,9 @@ public abstract class DummyMeetingGenerator {
                     Room.Yoshi, LocalTime.of(9, 36),
                     LocalTime.of(10, 36),
                     new ArrayList<>(Arrays.asList(
-                            "yumei@openclassroom.com",
+                            "florence@openclassroom.com",
                             "sammy@openclassroom.com",
-                            "adam@openclassroom.com"
+                            "virgile@openclassroom.com"
                     ))
 
             )
