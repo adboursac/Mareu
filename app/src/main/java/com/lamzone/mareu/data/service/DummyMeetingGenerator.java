@@ -77,7 +77,7 @@ public abstract class DummyMeetingGenerator {
                     LocalTime.of(10, 36),
                     new ArrayList<>(Arrays.asList(
                             "florence@openclassroom.com",
-                            "sammy@openclassroom.com",
+                            "yacine@openclassroom.com",
                             "virgile@openclassroom.com"
                     ))
 

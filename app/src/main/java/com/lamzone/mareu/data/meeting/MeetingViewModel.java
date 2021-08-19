@@ -68,13 +68,21 @@ public class MeetingViewModel extends ViewModel {
         updateViewModelData();
     }
 
+    public Meeting getMeeting(long id) {
+        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
+        for (Meeting meeting : meetings) {
+            if (meeting.getId() == id) return meeting;
+        }
+        return null;
+    }
+
     private void updateViewModelData() {
         List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
         mMeetingsLiveData.setValue(meetings);
         applyFilters();
     }
 
-    public String checkMeeting(Meeting meeting, Context context) {
+    public String checkMeetingValidity(Meeting meeting, Context context) {
         int messageId = checkRoomRelatedFields(meeting);
         if (messageId != 0) return context.getResources().getString(messageId);
 
@@ -163,7 +171,7 @@ public class MeetingViewModel extends ViewModel {
         mTimeFilter = new LocalTime[]{fromTime, toTime};
     }
 
-    private String formatTime(LocalTime time) {
+    public String formatTime(LocalTime time) {
         return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 

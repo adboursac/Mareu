@@ -1,12 +1,17 @@
 package com.lamzone.mareu.ui;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavAction;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
@@ -60,7 +65,11 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
         holder.mMeetingItemBinding.itemIconLetter.setText(roomLetter);
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
-        //holder.itemView.setOnClickListener(v -> activity.navigate(v.getContext(), meeting.getId()));
+        holder.itemView.setOnClickListener(v ->
+            Navigation.findNavController(v).navigate(
+                    MeetingListFragmentDirections.navigateToMeetingDetails().setMeetingId(meeting.getId())
+            )
+        );
     }
 
     @Override
