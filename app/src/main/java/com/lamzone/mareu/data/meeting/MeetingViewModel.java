@@ -60,12 +60,14 @@ public class MeetingViewModel extends ViewModel {
 
     public void addMeeting(Meeting meeting) {
         mMeetingRepository.addMeeting(meeting);
-        updateViewModelData();
+        fetchMeetings();
+        applyFilters();
     }
 
     public void deleteMeeting(Meeting meeting) {
         mMeetingRepository.deleteMeeting(meeting);
-        updateViewModelData();
+        fetchMeetings();
+        applyFilters();
     }
 
     public Meeting getMeeting(long id) {
@@ -74,12 +76,6 @@ public class MeetingViewModel extends ViewModel {
             if (meeting.getId() == id) return meeting;
         }
         return null;
-    }
-
-    private void updateViewModelData() {
-        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
-        mMeetingsLiveData.setValue(meetings);
-        applyFilters();
     }
 
     public String checkMeetingValidity(Meeting meeting, Context context) {

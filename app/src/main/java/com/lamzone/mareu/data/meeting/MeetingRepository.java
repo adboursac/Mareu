@@ -26,11 +26,9 @@ public class MeetingRepository {
 
     public void deleteMeeting(Meeting meeting) {
         service.deleteMeeting(meeting);
-        mMeetingsCache = service.getMeetings();
     }
 
     public void addMeeting(Meeting meeting) {
         service.addMeeting(meeting);
-        mMeetingsCache = service.getMeetings();
     }
 }
