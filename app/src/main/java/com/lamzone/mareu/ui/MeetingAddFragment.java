@@ -53,7 +53,7 @@ public class MeetingAddFragment extends Fragment {
     public void initAddButton() {
         mBinding.addButton.setOnClickListener(v -> {
             Meeting meeting = generateMeeting();
-            String resultMessage = mMeetingViewModel.checkMeetingValidity(meeting, getContext());
+            String resultMessage = mMeetingViewModel.checkMeetingValidity(meeting, getResources());
 
             if (resultMessage == "") {
                 mMeetingViewModel.addMeeting(meeting);

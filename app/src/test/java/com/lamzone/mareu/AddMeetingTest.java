@@ -1,0 +1,118 @@
+package com.lamzone.mareu;
+
+import android.content.res.Resources;
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
+import com.lamzone.mareu.data.meeting.MeetingRepository;
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingViewModel;
+import com.lamzone.mareu.data.meeting.model.Meeting;
+import com.lamzone.mareu.data.meeting.model.Room;
+import com.lamzone.mareu.data.service.DummyMeetingGenerator;
+import com.lamzone.mareu.utils.MockedResources;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import java.time.LocalTime;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
+public class AddMeetingTest {
+    private MeetingRepository mMeetingRepository;
+    private MeetingViewModel mMeetingViewModel;
+    private Resources mMockedResources;
+
+    @Rule
+    public InstantTaskExecutorRule instantExecutorRule = new InstantTaskExecutorRule();
+
+    @Before
+    public void setup() {
+        mMeetingRepository = new MeetingRepository();
+        mMeetingViewModel = new MeetingViewModel();
+        mMockedResources = new MockedResources();
+    }
+
+    /**
+     * Ensure repository add meeting correctly
+     */
+    @Test
+    public void repositoryAddMeetingTest() {
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setStartTime(LocalTime.of(1,0));
+        m.setEndTime(
+                m.getStartTime().plusMinutes(
+                        MeetingTimeHelper.MEETING_MIN_DURATION)
+        );
+        mMeetingRepository.addMeeting(m);
+        assertTrue(mMeetingRepository.fetchMeetings().contains(m));
+    }
+
+    /**
+     * Ensure viewModel add meeting correctly
+     */
+    @Test
+    public void viewModelAddMeetingTest() {
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setStartTime(LocalTime.of(1,0));
+        m.setEndTime(
+                m.getStartTime().plusMinutes(
+                        MeetingTimeHelper.MEETING_MIN_DURATION)
+        );
+        mMeetingViewModel.addMeeting(m);
+        mMeetingViewModel.fetchMeetings();
+        assertTrue(mMeetingViewModel.getMeetingsLiveData().getValue().contains(m));
+    }
+
+    /**
+     * Ensure same room and overlapping Start Time is Denied
+     */
+    @Test
+    public void sameRoomOverlappingStartTimeIsDenied() {
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setEndTime(m.getEndTime().plusMinutes(1));
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertNotEquals("", bookingMessage);
+    }
+
+    /**
+     * Ensure same room and overlapping End Time is Denied
+     */
+    @Test
+    public void sameRoomOverlappingEndTimeIsDenied() {
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setStartTime(m.getEndTime().minusMinutes(1));
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertNotEquals("", bookingMessage);
+    }
+
+    /**
+     * Ensure same room and non overlapping time is accepted
+     */
+    @Test
+    public void sameRoomNonOverlappingTimeIsAccepted() {
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setStartTime(m.getEndTime());
+        m.setEndTime(m.getEndTime().plusMinutes(MeetingTimeHelper.MEETING_MIN_DURATION));
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("", bookingMessage);
+    }
+
+    /**
+     * Ensure different room and overlapping time is accepted
+     */
+    @Test
+    public void differentRoomOverlappingTimeIsAccepted() {
+        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
+        Meeting m = bookedMeeting.clone();
+        bookedMeeting.setRoom(Room.Luigi);
+        bookedMeeting.setRoom(Room.Mario);
+        
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("", bookingMessage);
+    }
+}

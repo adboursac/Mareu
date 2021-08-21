@@ -29,6 +29,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -46,8 +52,12 @@ dependencies {
     // UNIT TEST
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
     // INSTRUMENTED TEST
-    androidTestImplementation 'androidx.test:runner:1.1.2'
+    def android_test_version = "1.2.0"
+    androidTestImplementation "androidx.test:runner:$android_test_version"
+    //testImplementation "androidx.test:core:$android_test_version"
+    testImplementation "android.arch.core:core-testing:$android_test_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

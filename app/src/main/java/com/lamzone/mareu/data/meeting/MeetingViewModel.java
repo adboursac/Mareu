@@ -1,6 +1,7 @@
 package com.lamzone.mareu.data.meeting;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Patterns;
 
 import androidx.lifecycle.MutableLiveData;
@@ -38,20 +39,27 @@ public class MeetingViewModel extends ViewModel {
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
         return mMeetingsLiveData;
     }
-    public LocalTime[] getTimeFilter() {
-        return mTimeFilter;
-    }
 
     public Room[] getRooms() {
         return mRooms;
     }
-    public boolean[] getRoomFilter() { return mRoomFilter; }
+
+    public boolean[] getRoomFilter() {
+        return mRoomFilter;
+    }
+
     public void setRoomFilter(boolean[] roomFilter) {
         setEmptyRoomFilter(false);
         mRoomFilter = roomFilter;
     }
-    public boolean isEmptyRoomFilter() { return mEmptyRoomFilter; }
-    public void setEmptyRoomFilter(boolean emptyRoomFilter) { mEmptyRoomFilter = emptyRoomFilter; }
+
+    public boolean isEmptyRoomFilter() {
+        return mEmptyRoomFilter;
+    }
+
+    public void setEmptyRoomFilter(boolean emptyRoomFilter) {
+        mEmptyRoomFilter = emptyRoomFilter;
+    }
 
     public void fetchMeetings() {
         List<Meeting> meetings = mMeetingRepository.fetchMeetings();
@@ -78,32 +86,27 @@ public class MeetingViewModel extends ViewModel {
         return null;
     }
 
-    public String checkMeetingValidity(Meeting meeting, Context context) {
-        int messageId = checkRoomRelatedFields(meeting);
-        if (messageId != 0) return context.getResources().getString(messageId);
+    public String checkMeetingValidity(Meeting meeting, Resources resources) {
+        int messageId = checkMeetingUncompletedFields(meeting);
+        if (messageId != 0) return resources.getString(messageId);
+
+        messageId = MeetingTimeHelper.checkEndTime(meeting);
+        if (messageId != 0) return resources.getString(messageId);
 
         List<Meeting> updatedMeetingList = mMeetingRepository.fetchMeetings();
         Meeting overlappingMeeting = MeetingTimeHelper.checkTimeSlot(meeting, updatedMeetingList);
         if (overlappingMeeting != null) return
-                context.getResources().getString(R.string.invalidMeetingTimeSlot)
+                resources.getString(R.string.invalidMeetingTimeSlot)
                         + "\n" + meetingTimeSlotToString(overlappingMeeting);
-
-        messageId = checkNonRoomRelatedFields(meeting);
-        if (messageId != 0) return context.getResources().getString(messageId);
-
         return "";
     }
 
-    private int checkRoomRelatedFields(Meeting meeting) {
+    private int checkMeetingUncompletedFields(Meeting meeting) {
+        if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
+            return R.string.invalidMeetingTitle;
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
         if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
-        return MeetingTimeHelper.checkEndTime(meeting);
-    }
-
-    private int checkNonRoomRelatedFields(Meeting meeting) {
-        if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
-            return R.string.invalidMeetingTitle;
         if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
         return 0;
     }

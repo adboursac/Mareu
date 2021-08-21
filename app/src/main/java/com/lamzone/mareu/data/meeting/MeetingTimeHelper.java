@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MeetingTimeHelper {
 
-    public static final int FILTER_PRECISION = 6;
+    public static final int FILTER_PRECISION = 15;
     public static final int MEETING_MIN_DURATION = 15;
     public static final int MEETING_MAX_DURATION = 240;
 
