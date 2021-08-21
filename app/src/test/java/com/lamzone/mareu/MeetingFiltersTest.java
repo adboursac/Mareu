@@ -13,6 +13,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -34,7 +37,7 @@ public class MeetingFiltersTest {
     }
 
     @Test
-    public void RoomFilterTest() {
+    public void roomFilterTest() {
         Meeting expectedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
         boolean[] roomFilter = FilterTestHelper.generateRoomFilter(expectedMeeting.getRoom());
         mMeetingViewModel.setRoomFilter(roomFilter);
@@ -45,15 +48,47 @@ public class MeetingFiltersTest {
     }
 
     @Test
-    public void FiltersWithStatTimeTest() {
-        Meeting expectedMeeting0 = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting expectedMeeting5 = DummyMeetingGenerator.DUMMY_MEETINGS.get(5);
-
-        mMeetingViewModel.setTimeFilter(mMeetingViewModel.formatTime(LocalTime.of(9,45)), null);
+    public void filtersWithStartTimeTest() {
+        List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(2),
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(3)
+        ));
+        mMeetingViewModel.setTimeFilter(mMeetingViewModel.formatTime(LocalTime.of(13, 0)), null);
         mMeetingViewModel.applyFilters();
+        List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
 
-        assertEquals(2, mMeetingViewModel.getMeetingsLiveData().getValue().size());
-        assertEquals(expectedMeeting0, mMeetingViewModel.getMeetingsLiveData().getValue().get(0));
-        assertEquals(expectedMeeting5, mMeetingViewModel.getMeetingsLiveData().getValue().get(1));
+        assertEquals(2, testedList.size());
+        assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
+    }
+
+    @Test
+    public void filterWithEndTimeTest() {
+        List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(1),
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
+        ));
+        mMeetingViewModel.setTimeFilter(null, mMeetingViewModel.formatTime(LocalTime.of(13, 0)));
+        mMeetingViewModel.applyFilters();
+        List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
+
+        assertEquals(3, testedList.size());
+        assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
+    }
+
+    @Test
+    public void filterWithTimeRangeTest() {
+        List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
+        ));
+        mMeetingViewModel.setTimeFilter(
+                mMeetingViewModel.formatTime(LocalTime.of(9, 30)),
+                mMeetingViewModel.formatTime(LocalTime.of(11, 30)));
+        mMeetingViewModel.applyFilters();
+        List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
+
+        assertEquals(2, testedList.size());
+        assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
     }
 }

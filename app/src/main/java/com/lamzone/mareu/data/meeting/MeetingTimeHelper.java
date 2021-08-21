@@ -9,11 +9,10 @@ import java.util.List;
 
 public class MeetingTimeHelper {
 
-    public static final int FILTER_PRECISION = 15;
     public static final int MEETING_MIN_DURATION = 15;
     public static final int MEETING_MAX_DURATION = 240;
 
-    public static Meeting checkTimeSlot(Meeting meeting, List<Meeting> meetingsFullList) {
+    public static Meeting findOverlappingMeetings(Meeting meeting, List<Meeting> meetingsFullList) {
         for (Meeting m : meetingsFullList) {
             if (meeting.getRoom() == m.getRoom() &&
                     (meeting.getStartTime().equals(m.getStartTime()) ||
@@ -53,37 +52,54 @@ public class MeetingTimeHelper {
     }
 
     public static List<Meeting> filterMeetings(List<Meeting> meetings, LocalTime[] hourFilter) {
-        if (hourFilter[0] == null && hourFilter[1] == null) {
-            return meetings;
-        }
+        if (hourFilter[0] == null && hourFilter[1] == null) return meetings;
 
         ArrayList<Meeting> filteredList = new ArrayList<>();
-        if (hourFilter[0] == null) {
-            for (Meeting m : meetings) {
-                LocalTime endTimeMin = hourFilter[1].minusMinutes(FILTER_PRECISION);
-                LocalTime endTimeMax = hourFilter[1].plusMinutes(FILTER_PRECISION);
-                boolean upperMinRange = m.getEndTime().isAfter(endTimeMin);
-                boolean underMaxRange = m.getEndTime().isBefore(endTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        } else if (hourFilter[1] == null) {
-            for (Meeting m : meetings) {
-                LocalTime startTimeMin = hourFilter[0].minusMinutes(FILTER_PRECISION);
-                LocalTime startTimeMax = hourFilter[0].plusMinutes(FILTER_PRECISION);
-                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
-                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        } else {
-            for (Meeting m : meetings) {
-                LocalTime startTimeMin = hourFilter[0].minusMinutes(1);
-                LocalTime startTimeMax = hourFilter[1].plusMinutes(1);
-                boolean upperMinRange = m.getStartTime().isAfter(startTimeMin);
-                boolean underMaxRange = m.getStartTime().isBefore(startTimeMax);
-                if (upperMinRange && underMaxRange) filteredList.add(m);
-            }
-        }
+        if (hourFilter[0] == null) includeEndedMeetings(meetings, filteredList, hourFilter[1]);
+        else if (hourFilter[1] == null) includeOverlappingMeetings(meetings, filteredList, hourFilter[0]);
+        else includeContainedMeetings(meetings, filteredList, hourFilter[0], hourFilter[1]);
 
         return filteredList;
+    }
+
+    /**
+     * include every overlapping meetings start time included, and end time excluded
+     * @param fullList
+     * @param filteredList
+     * @param time
+     */
+    private static void includeOverlappingMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime time) {
+        for (Meeting m : fullList) {
+            boolean upperEqualMinRange = !time.isBefore(m.getStartTime());
+            boolean underMaxRange = m.getEndTime().isAfter(time);
+            if (upperEqualMinRange && underMaxRange) filteredList.add(m);
+        }
+    }
+
+    /**
+     * include meetings with end time before or equal to parameter time
+     * @param fullList
+     * @param filteredList
+     * @param time
+     */
+    private static void includeEndedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime time) {
+        for (Meeting m : fullList) {
+            if (!m.getEndTime().isAfter(time)) filteredList.add(m);
+        }
+    }
+
+    /**
+     * add meetings according to inclusive range [start time, end time]
+     * @param fullList
+     * @param filteredList
+     * @param start
+     * @param end
+     */
+    private static void includeContainedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime start, LocalTime end) {
+        for (Meeting m : fullList) {
+            boolean upperEqualMinRange = !m.getStartTime().isBefore(start);
+            boolean underEqualMaxRange = !m.getEndTime().isAfter(end);
+            if (upperEqualMinRange && underEqualMaxRange) filteredList.add(m);
+        }
     }
 }

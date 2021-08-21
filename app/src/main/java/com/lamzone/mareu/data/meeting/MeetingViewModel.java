@@ -94,7 +94,7 @@ public class MeetingViewModel extends ViewModel {
         if (messageId != 0) return resources.getString(messageId);
 
         List<Meeting> updatedMeetingList = mMeetingRepository.fetchMeetings();
-        Meeting overlappingMeeting = MeetingTimeHelper.checkTimeSlot(meeting, updatedMeetingList);
+        Meeting overlappingMeeting = MeetingTimeHelper.findOverlappingMeetings(meeting, updatedMeetingList);
         if (overlappingMeeting != null) return
                 resources.getString(R.string.invalidMeetingTimeSlot)
                         + "\n" + meetingTimeSlotToString(overlappingMeeting);
