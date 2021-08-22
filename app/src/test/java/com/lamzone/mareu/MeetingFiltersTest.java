@@ -36,6 +36,9 @@ public class MeetingFiltersTest {
         mMeetingViewModel = new MeetingViewModel();
     }
 
+    /**
+     * Ensure filter by room returns required rooms only
+     */
     @Test
     public void roomFilterTest() {
         Meeting expectedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
@@ -47,6 +50,10 @@ public class MeetingFiltersTest {
         assertEquals(expectedMeeting, mMeetingViewModel.getMeetingsLiveData().getValue().get(0));
     }
 
+    /**
+     * Ensure filter with filled start time and null end time returns meetings
+     * with range [start time, end time[
+     */
     @Test
     public void filtersWithStartTimeTest() {
         List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
@@ -62,6 +69,11 @@ public class MeetingFiltersTest {
     }
 
     @Test
+
+    /**
+     * Ensure filter with null start time and filled end time returns meetings
+     * with end time before or equal to parameter time
+     */
     public void filterWithEndTimeTest() {
         List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
@@ -76,6 +88,10 @@ public class MeetingFiltersTest {
         assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
     }
 
+    /**
+     * Ensure filter with both filled start time and end time returns meetings
+     * according to inclusive range [start time, end time]
+     */
     @Test
     public void filterWithTimeRangeTest() {
         List<Meeting> expectedList = new ArrayList<>(Arrays.asList(

@@ -63,7 +63,8 @@ public class MeetingTimeHelper {
     }
 
     /**
-     * include every overlapping meetings start time included, and end time excluded
+     * returns meetings start meetings with range [start time, end time[
+     * (end time excluded)
      * @param fullList
      * @param filteredList
      * @param time
@@ -77,7 +78,7 @@ public class MeetingTimeHelper {
     }
 
     /**
-     * include meetings with end time before or equal to parameter time
+     * returns meetings with end time before or equal to parameter time
      * @param fullList
      * @param filteredList
      * @param time
