@@ -115,4 +115,76 @@ public class AddMeetingTest {
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("", bookingMessage);
     }
+
+    /**
+     * Ensure meeting end after midnight is denied
+     */
+    @Test
+    public void meetingEndAfterMidnightIsDenied() {
+        LocalTime midnight = LocalTime.of(0, 0);
+        LocalTime midnightLatestStartTime = midnight
+                .minusMinutes(MeetingTimeHelper.MEETING_MAX_DURATION);
+
+        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
+        Meeting m = bookedMeeting.clone();
+        m.setStartTime(midnightLatestStartTime.plusMinutes(1));
+        m.setEndTime(midnight.plusMinutes(1));
+
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("id: invalidMeetingEndAfterMidnight", bookingMessage);
+    }
+
+    /**
+     * Ensure end time before start time is denied
+     */
+    @Test
+    public void meetingEndBeforeStartDenied() {
+        LocalTime midnight = LocalTime.of(0, 0);
+        LocalTime midnightLatestStartTime = midnight
+                .minusMinutes(MeetingTimeHelper.MEETING_MAX_DURATION);
+
+        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
+        Meeting m = bookedMeeting.clone();
+        m.setStartTime(midnightLatestStartTime);
+        m.setEndTime(midnight.plusMinutes(1));
+
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("id: invalidMeetingEndsBeforeItStarts", bookingMessage);
+    }
+
+    /**
+     * Ensure meeting duration above MEETING_MAX_DURATION is denied
+     */
+    @Test
+    public void meetingExceedingMaxDurationIsDenied() {
+        LocalTime midnight = LocalTime.of(0, 0);
+        LocalTime midnightLatestStartTime = midnight
+                .minusMinutes(MeetingTimeHelper.MEETING_MAX_DURATION);
+
+        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
+        Meeting m = bookedMeeting.clone();
+        m.setStartTime(midnightLatestStartTime.minusMinutes(1));
+        m.setEndTime(midnight);
+
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("id: invalidMeetingMaxDuration", bookingMessage);
+    }
+
+    /**
+     * Ensure meeting duration below MEETING_MIN_DURATION is denied
+     */
+    @Test
+    public void meetingBelowMinDurationIsDenied() {
+        LocalTime midnight = LocalTime.of(0, 0);
+        LocalTime smallestEndTime = midnight
+                .plusMinutes(MeetingTimeHelper.MEETING_MIN_DURATION);
+
+        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
+        Meeting m = bookedMeeting.clone();
+        m.setStartTime(midnight);
+        m.setEndTime(smallestEndTime.minusMinutes(1));
+
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("id: invalidMeetingMinDuration", bookingMessage);
+    }
 }
