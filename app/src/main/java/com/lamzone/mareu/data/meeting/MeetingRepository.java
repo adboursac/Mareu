@@ -1,10 +1,8 @@
 package com.lamzone.mareu.data.meeting;
 
-import androidx.lifecycle.MutableLiveData;
 
 import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.model.Meeting;
-import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.data.service.MeetingApiService;
 
 import java.util.ArrayList;

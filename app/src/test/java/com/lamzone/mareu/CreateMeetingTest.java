@@ -22,7 +22,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AddMeetingTest {
+/**
+ * Create Meeting feature unit test
+ */
+public class CreateMeetingTest {
     private MeetingRepository mMeetingRepository;
     private MeetingViewModel mMeetingViewModel;
     private Resources mMockedResources;

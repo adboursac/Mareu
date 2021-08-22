@@ -55,7 +55,7 @@
         android:label="@string/meetingDetails"
         tools:layout="@layout/fragment_meeting_details" >
         <action
-            android:id="@+id/navigateToMeetingDetails"
+            android:id="@+id/navigateToMeetingList"
             app:destination="@id/fragmentMeetingList" />
         <argument
             android:name="meetingId"

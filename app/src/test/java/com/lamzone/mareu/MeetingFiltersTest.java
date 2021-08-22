@@ -2,7 +2,6 @@ package com.lamzone.mareu;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
@@ -20,10 +19,10 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
+/**
+ * Meeting filter feature unit test
+ */
 public class MeetingFiltersTest {
 
     private MeetingViewModel mMeetingViewModel;

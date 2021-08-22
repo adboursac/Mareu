@@ -13,7 +13,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public class DeleteMeetingsTest {
+/**
+ * Delete Meeting feature unit test
+ */
+public class DeleteMeetingTest {
     private MeetingRepository mMeetingRepository;
     private MeetingViewModel mMeetingViewModel;
 
