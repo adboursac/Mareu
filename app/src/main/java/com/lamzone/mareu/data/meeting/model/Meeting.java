@@ -1,7 +1,10 @@
 package com.lamzone.mareu.data.meeting.model;
 
+import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -95,5 +98,22 @@ public class Meeting {
                 mEndTime,
                 new ArrayList<>(mMemberList)
         );
+    }
+
+    public static String memberListToString(List<String> list, String separator) {
+        String text = "";
+        for (int i = 0; i < list.size(); i++) {
+            text += list.get(i);
+            if (i + 1 < list.size()) text += separator;
+        }
+        return text;
+    }
+
+    public String shortDescription(Resources resources) {
+        return getTitle() +
+                " • " +
+                MeetingTimeHelper.toString(mStartTime) +
+                " • " +
+                mRoom.getName(resources);
     }
 }

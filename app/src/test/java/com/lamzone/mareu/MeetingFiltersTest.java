@@ -2,6 +2,7 @@ package com.lamzone.mareu;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
@@ -59,7 +60,7 @@ public class MeetingFiltersTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(2),
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(3)
         ));
-        mMeetingViewModel.setTimeFilter(mMeetingViewModel.formatTime(LocalTime.of(13, 0)), null);
+        mMeetingViewModel.setTimeFilter(MeetingTimeHelper.toString(LocalTime.of(13, 0)), null);
         mMeetingViewModel.applyFilters();
         List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
 
@@ -79,7 +80,7 @@ public class MeetingFiltersTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(1),
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
         ));
-        mMeetingViewModel.setTimeFilter(null, mMeetingViewModel.formatTime(LocalTime.of(13, 0)));
+        mMeetingViewModel.setTimeFilter(null, MeetingTimeHelper.toString(LocalTime.of(13, 0)));
         mMeetingViewModel.applyFilters();
         List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
 
@@ -98,8 +99,8 @@ public class MeetingFiltersTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
         ));
         mMeetingViewModel.setTimeFilter(
-                mMeetingViewModel.formatTime(LocalTime.of(9, 30)),
-                mMeetingViewModel.formatTime(LocalTime.of(11, 30)));
+                MeetingTimeHelper.toString(LocalTime.of(9, 30)),
+                MeetingTimeHelper.toString(LocalTime.of(11, 30)));
         mMeetingViewModel.applyFilters();
         List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
 

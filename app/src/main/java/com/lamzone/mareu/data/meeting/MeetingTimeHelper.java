@@ -4,6 +4,7 @@ import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,5 +103,31 @@ public class MeetingTimeHelper {
             boolean underEqualMaxRange = !m.getEndTime().isAfter(end);
             if (upperEqualMinRange && underEqualMaxRange) filteredList.add(m);
         }
+    }
+
+    private static DateTimeFormatter getTimeFormatter() {
+        return DateTimeFormatter.ofPattern("HH:mm");
+    }
+
+    public static String toString(LocalTime time) {
+        return time.format(getTimeFormatter());
+    }
+
+    public static String toString(LocalTime start, LocalTime end) {
+        return toString(start) + " - " + toString(end);
+    }
+
+    public static LocalTime toTime(String timeString) {
+        return toTime(timeString, null);
+    }
+
+    public static LocalTime toTime(String timeString, LocalTime defaultTime) {
+        LocalTime time;
+        try {
+            time = LocalTime.parse(timeString, getTimeFormatter());
+        } catch (Exception e) {
+            time = defaultTime;
+        }
+        return time;
     }
 }

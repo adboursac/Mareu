@@ -33,17 +33,26 @@ public enum Room {
     }
 
     @StringRes
-    public int getName() {
+    public int getNameId() {
         return mName;
     }
 
     @ColorRes
-    public int getColor() {
+    public int getColorId() {
         return mColor;
     }
 
-    public static String getLetter(String roomName) {
-        return substring(roomName,0,1);
+    public String getName(Resources resources) {
+        return resources.getString(mName);
     }
+
+    public String getLetter(Resources resources) {
+        return substring(getName(resources),0,1);
+    }
+
+    public int getColor(Resources resources) {
+        return resources.getColor(mColor);
+    }
+
 }
 

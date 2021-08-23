@@ -1,6 +1,7 @@
 package com.lamzone.mareu.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
@@ -53,22 +55,18 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Meeting meeting = mMeetings.get(position);
-        String roomName = mContext.getResources().getString(meeting.getRoom().getName());
-        String roomLetter = Room.getLetter(roomName);
-        String time = meeting.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-        int roomColor = mContext.getResources().getColor(meeting.getRoom().getColor());
+        Resources resources = mContext.getResources();
+        Room room = meeting.getRoom();
 
-        String title = meeting.getTitle() + " • " + time + " • " + roomName;
-        String memberList = MeetingViewModel.listToString(meeting.getMemberList(), ", ");
-        holder.mMeetingItemBinding.itemTitle.setText(title);
-        holder.mMeetingItemBinding.itemMembers.setText(memberList);
-        holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(roomColor);
-        holder.mMeetingItemBinding.itemIconLetter.setText(roomLetter);
+        holder.mMeetingItemBinding.itemTitle.setText(meeting.shortDescription(resources));
+        holder.mMeetingItemBinding.itemMembers.setText(meeting.memberListToString(meeting.getMemberList(), ", "));
+        holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(room.getColor(resources));
+        holder.mMeetingItemBinding.itemIconLetter.setText(room.getLetter(resources));
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
         holder.itemView.setOnClickListener(v ->
-            Navigation.findNavController(v).navigate(
-                    MeetingListFragmentDirections.navigateToMeetingDetails().setMeetingId(meeting.getId())
-            )
+                Navigation.findNavController(v).navigate(
+                        MeetingListFragmentDirections.navigateToMeetingDetails().setMeetingId(meeting.getId())
+                )
         );
     }
 

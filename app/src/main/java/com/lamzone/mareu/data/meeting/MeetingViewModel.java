@@ -12,7 +12,6 @@ import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,10 +94,16 @@ public class MeetingViewModel extends ViewModel {
 
         List<Meeting> updatedMeetingList = mMeetingRepository.fetchMeetings();
         Meeting overlappingMeeting = MeetingTimeHelper.findOverlappingMeetings(meeting, updatedMeetingList);
-        if (overlappingMeeting != null) return
-                resources.getString(R.string.invalidMeetingTimeSlot)
-                        + "\n" + meetingTimeSlotToString(overlappingMeeting);
+        if (overlappingMeeting != null)
+            return generateOverlappingMeetingMessage(overlappingMeeting, resources);
         return "";
+    }
+
+    private String generateOverlappingMeetingMessage(Meeting overlappingMeeting, Resources resources) {
+        return resources.getString(R.string.invalidMeetingTimeSlot) + "\n" +
+                MeetingTimeHelper.toString(
+                        overlappingMeeting.getStartTime(),
+                        overlappingMeeting.getEndTime());
     }
 
     private int checkMeetingUncompletedFields(Meeting meeting) {
@@ -120,7 +125,7 @@ public class MeetingViewModel extends ViewModel {
 
     private int getRoomPosition(Room room) {
         for (int i = 0; i < mRooms.length; i++) {
-            if (mRooms[i].getName() == room.getName()) return i;
+            if (mRooms[i].getNameId() == room.getNameId()) return i;
         }
         return -1;
     }
@@ -145,7 +150,7 @@ public class MeetingViewModel extends ViewModel {
 
     public String getFromTimeString(Context context) {
         LocalTime fromTime = mTimeFilter[0];
-        if (fromTime != null) return formatTime(fromTime);
+        if (fromTime != null) return MeetingTimeHelper.toString(fromTime);
         else {
             return context.getResources().getString(R.string.from);
         }
@@ -153,35 +158,16 @@ public class MeetingViewModel extends ViewModel {
 
     public String getToTimeString(Context context) {
         LocalTime endTime = mTimeFilter[1];
-        if (endTime != null) return formatTime(endTime);
+        if (endTime != null) return MeetingTimeHelper.toString(endTime);
         else {
             return context.getResources().getString(R.string.to);
         }
     }
 
-    private String meetingTimeSlotToString(Meeting meeting) {
-        return formatTime(meeting.getStartTime()) +
-                " - " + formatTime(meeting.getEndTime());
-    }
-
     public void setTimeFilter(String from, String to) {
-        LocalTime fromTime = stringToLocalTime(from);
-        LocalTime toTime = stringToLocalTime(to);
+        LocalTime fromTime = MeetingTimeHelper.toTime(from);
+        LocalTime toTime = MeetingTimeHelper.toTime(to);
         mTimeFilter = new LocalTime[]{fromTime, toTime};
-    }
-
-    public String formatTime(LocalTime time) {
-        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
-    }
-
-    public LocalTime stringToLocalTime(String timeString) {
-        LocalTime time;
-        try {
-            time = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm"));
-        } catch (Exception e) {
-            time = null;
-        }
-        return time;
     }
 
     public void applyFilters() {
@@ -194,14 +180,5 @@ public class MeetingViewModel extends ViewModel {
     public boolean isEmailValid(String text) {
         if (!text.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(text).matches()) return true;
         else return false;
-    }
-
-    public static String listToString(List<String> list, String separator) {
-        String text = "";
-        for (int i = 0; i < list.size(); i++) {
-            text += list.get(i);
-            if (i + 1 < list.size()) text += separator;
-        }
-        return text;
     }
 }

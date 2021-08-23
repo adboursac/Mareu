@@ -1,6 +1,6 @@
 package com.lamzone.mareu.ui;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -17,7 +17,7 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
     private final Room[] mRooms;
     private boolean[] mSelected;
     private RoomFilterSelectCommand mSelectCommand;
-    private Context mContext;
+    private Resources mResources;
 
     public RoomFilterRecyclerViewAdapter(Room[] rooms, boolean[] selected, RoomFilterSelectCommand selectCommand) {
         mRooms = rooms;
@@ -37,7 +37,7 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
     @NonNull
     @Override
     public RoomFilterRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        mContext = parent.getContext();
+        mResources = parent.getContext().getResources();
         return new RoomFilterRecyclerViewAdapter.ViewHolder(RoomItemBinding.inflate(LayoutInflater.from(parent.getContext()),
                 parent, false));
     }
@@ -47,15 +47,12 @@ public class RoomFilterRecyclerViewAdapter extends RecyclerView.Adapter<RoomFilt
         Room room = mRooms[position];
         boolean selected = mSelected[position];
 
-        String roomName = mContext.getResources().getString(room.getName());
-        String roomLetter = Room.getLetter(roomName);
-        int roomColor = mContext.getResources().getColor(room.getColor());
-        int selectColor = mContext.getResources().getColor(R.color.blue_200);
-        int whiteColor = mContext.getResources().getColor(R.color.white);
+        int selectColor = mResources.getColor(R.color.blue_200);
+        int whiteColor = mResources.getColor(R.color.white);
 
-        holder.mRoomItemBinding.roomItemName.setText(roomName);
-        holder.mRoomItemBinding.roomItemIconLetter.setText(roomLetter);
-        holder.mRoomItemBinding.roomItemCircle.setColorFilter(roomColor);
+        holder.mRoomItemBinding.roomItemName.setText(room.getName(mResources));
+        holder.mRoomItemBinding.roomItemIconLetter.setText(room.getLetter(mResources));
+        holder.mRoomItemBinding.roomItemCircle.setColorFilter(room.getColor(mResources));
 
         if (selected) {
             holder.itemView.setBackgroundColor(selectColor);

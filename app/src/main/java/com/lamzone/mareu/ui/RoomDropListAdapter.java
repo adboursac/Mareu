@@ -45,12 +45,9 @@ public class RoomDropListAdapter extends ArrayAdapter<Room> {
         TextView letter = row.findViewById(R.id.room_item_icon_letter);
         TextView name = row.findViewById(R.id.room_item_name);
 
-        int roomColor = mContext.getResources().getColor(room.getColor());
-        String roomName = mContext.getResources().getString(room.getName());
-
-        circle.setColorFilter(roomColor);
-        letter.setText(Room.getLetter(roomName));
-        name.setText(roomName);
+        circle.setColorFilter(room.getColor(mContext.getResources()));
+        letter.setText(room.getLetter(mContext.getResources()));
+        name.setText(room.getName(mContext.getResources()));
 
         return row;
     }

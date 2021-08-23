@@ -3,13 +3,13 @@ package com.lamzone.mareu.ui;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.databinding.FragmentMeetingDetailsBinding;
@@ -37,10 +37,9 @@ public class MeetingDetailsFragment extends Fragment {
         Meeting meeting = mMeetingViewModel.getMeeting(meetingId);
 
         mBinding.titleInput.setText(meeting.getTitle());
-        mBinding.roomInput.setText(meeting.getRoom().getName());
-        mBinding.startTimeInput.setText(mMeetingViewModel.formatTime(meeting.getStartTime()));
-        mBinding.endTimeInput.setText(mMeetingViewModel.formatTime(meeting.getEndTime()));
-        mBinding.membersListInput.setText(MeetingViewModel.listToString(meeting.getMemberList(), "\n"));
-
+        mBinding.roomInput.setText(meeting.getRoom().getName(getResources()));
+        mBinding.startTimeInput.setText(MeetingTimeHelper.toString(meeting.getStartTime()));
+        mBinding.endTimeInput.setText(MeetingTimeHelper.toString(meeting.getEndTime()));
+        mBinding.membersListInput.setText(Meeting.memberListToString(meeting.getMemberList(), "\n"));
     }
 }

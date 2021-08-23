@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.lamzone.mareu.R;
+import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
@@ -78,7 +79,7 @@ public class MeetingAddFragment extends Fragment {
         mBinding.memberMailLayout.setEndIconOnClickListener(v -> {
             mMemberList.add(0, mBinding.memberMailInput.getText().toString());
             mBinding.memberMailInput.setText("");
-            String memberList = MeetingViewModel.listToString(mMemberList, "\n");
+            String memberList = Meeting.memberListToString(mMemberList, "\n");
             mBinding.membersListInput.setText(memberList);
         });
 
@@ -114,8 +115,8 @@ public class MeetingAddFragment extends Fragment {
                 System.currentTimeMillis(),
                 mBinding.titleInput.getText().toString(),
                 mSelectedRoom,
-                mMeetingViewModel.stringToLocalTime(mBinding.startTimeInput.getText().toString()),
-                mMeetingViewModel.stringToLocalTime(mBinding.endTimeInput.getText().toString()),
+                MeetingTimeHelper.toTime(mBinding.startTimeInput.getText().toString()),
+                MeetingTimeHelper.toTime(mBinding.endTimeInput.getText().toString()),
                 mMemberList
         );
     }
