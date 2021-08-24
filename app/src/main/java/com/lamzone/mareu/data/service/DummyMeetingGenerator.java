@@ -16,11 +16,10 @@ public abstract class DummyMeetingGenerator {
                     Room.Luigi, LocalTime.of(9, 30),
                     LocalTime.of(11, 30),
                     new ArrayList<>(Arrays.asList(
-                            "martine@lamzone.com",
-                            "kad@lamzone.com",
+                            "amandine@lamzone.com",
+                            "luc@lamzone.com",
                             "olvier@lamzone.com"
                     ))
-
             ),
             new Meeting(
                     1,

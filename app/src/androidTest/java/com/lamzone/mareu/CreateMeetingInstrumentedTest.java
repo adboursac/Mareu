@@ -21,6 +21,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.lamzone.mareu.utils.RecyclerViewItemCountAssertion.withItemCount;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
@@ -29,12 +30,13 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.RootMatchers;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 
 import java.time.LocalTime;
 
 
-public class AddMeetingInstrumentedTest {
+public class CreateMeetingInstrumentedTest {
 
     private MainActivity mActivity;
 
@@ -63,7 +65,7 @@ public class AddMeetingInstrumentedTest {
         );
         String expectedItemTitle = expectedMeeting.shortDescription(mActivity.getResources());
         int initialMeetingCount = DummyMeetingGenerator.DUMMY_MEETINGS.size();
-        // Perform click on the element at position 0
+        // Perform click on add button
         onView(withId(R.id.addButton)).perform(click());
         //enter meeting title
         onView(withId(R.id.titleInput)).perform(typeText(expectedMeeting.getTitle()));
@@ -90,10 +92,13 @@ public class AddMeetingInstrumentedTest {
         Espresso.closeSoftKeyboard();
         // validate
         onView(withId(R.id.addButton)).perform(click());
+
         //check if created and added in meeting list
         onView(GetElementFromMatch.atPosition(
                 allOf(withId(R.id.item_title)),
                 initialMeetingCount)
         ).check(matches(withText(expectedItemTitle)));
+        //check if Meeting Count is correct
+        onView(ViewMatchers.withId(R.id.recyclerView)).check(withItemCount(initialMeetingCount + 1));
     }
 }
