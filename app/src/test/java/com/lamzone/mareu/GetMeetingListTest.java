@@ -2,10 +2,12 @@ package com.lamzone.mareu;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.MeetingRepository;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
+import com.lamzone.mareu.utils.TestPrinter;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,8 +31,7 @@ public class GetMeetingListTest {
 
     @Before
     public void setup() {
-        mMeetingRepository = new MeetingRepository();
-        mMeetingViewModel = new MeetingViewModel();
+        DI.generateNewApiService();
     }
 
     /**
@@ -38,6 +39,7 @@ public class GetMeetingListTest {
      */
     @Test
     public void repositoryFetchMeetingsTest() {
+        mMeetingRepository = new MeetingRepository(DI.getMeetingApiService());
         List<Meeting> testedList = mMeetingRepository.fetchMeetings();
         List<Meeting> expectedList = DummyMeetingGenerator.DUMMY_MEETINGS;
         assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
@@ -48,6 +50,7 @@ public class GetMeetingListTest {
      */
     @Test
     public void repositoryGetCachedMeetingsTest() {
+        mMeetingRepository = new MeetingRepository(DI.getMeetingApiService());
         mMeetingRepository.fetchMeetings();
         List<Meeting> testedList = mMeetingRepository.getCachedMeetings();
         List<Meeting> expectedList = DummyMeetingGenerator.DUMMY_MEETINGS;
@@ -59,6 +62,7 @@ public class GetMeetingListTest {
      */
     @Test
     public void viewModelFetchMeetingsTest() {
+        mMeetingViewModel = new MeetingViewModel();
         mMeetingViewModel.fetchMeetings();
         List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
         List<Meeting> expectedList = DummyMeetingGenerator.DUMMY_MEETINGS;
@@ -70,6 +74,7 @@ public class GetMeetingListTest {
      */
     @Test
     public void viewModelGetMeetingByIdTest() {
+        mMeetingViewModel = new MeetingViewModel();
         Meeting expectedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
         mMeetingViewModel.fetchMeetings();
         Meeting testedMeeting = mMeetingViewModel.getMeeting(0);

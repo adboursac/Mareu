@@ -4,6 +4,7 @@ import android.content.res.Resources;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.MeetingRepository;
 import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
@@ -35,7 +36,8 @@ public class CreateMeetingTest {
 
     @Before
     public void setup() {
-        mMeetingRepository = new MeetingRepository();
+        DI.generateNewApiService();
+        mMeetingRepository = new MeetingRepository(DI.getMeetingApiService());
         mMeetingViewModel = new MeetingViewModel();
         mMockedResources = new MockedResources();
     }
@@ -112,8 +114,7 @@ public class CreateMeetingTest {
     public void differentRoomOverlappingTimeIsAccepted() {
         Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
         Meeting m = bookedMeeting.clone();
-        bookedMeeting.setRoom(Room.Luigi);
-        bookedMeeting.setRoom(Room.Mario);
+        m.setRoom(Room.Kirby);
         
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("", bookingMessage);

@@ -2,6 +2,7 @@ package com.lamzone.mareu;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.MeetingRepository;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
@@ -25,7 +26,8 @@ public class DeleteMeetingTest {
 
     @Before
     public void setup() {
-        mMeetingRepository = new MeetingRepository();
+        DI.generateNewApiService();
+        mMeetingRepository = new MeetingRepository(DI.getMeetingApiService());
         mMeetingViewModel = new MeetingViewModel();
     }
 

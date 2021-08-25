@@ -1,5 +1,6 @@
 package com.lamzone.mareu;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.ui.MainActivity;
 
 import org.junit.Before;
@@ -29,6 +30,7 @@ public class GetMeetingListInstrumentedTest {
 
     @Before
     public void setUp() {
+        DI.generateNewApiService();
         mActivity = mActivityRule.getActivity();
         assertThat(mActivity, notNullValue());
     }

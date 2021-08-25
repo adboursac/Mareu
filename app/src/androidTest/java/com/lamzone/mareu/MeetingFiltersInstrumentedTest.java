@@ -7,6 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
@@ -47,6 +48,7 @@ public class MeetingFiltersInstrumentedTest {
 
     @Before
     public void setUp() {
+        DI.generateNewApiService();
         mActivity = mActivityRule.getActivity();
         assertThat(mActivity, notNullValue());
     }

@@ -1,14 +1,20 @@
 package com.lamzone.mareu;
 
+import android.content.res.Resources;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
+import com.lamzone.mareu.data.di.DI;
+import com.lamzone.mareu.data.meeting.MeetingRepository;
 import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
 import com.lamzone.mareu.utils.FilterTestHelper;
+import com.lamzone.mareu.utils.MockedResources;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -25,7 +31,6 @@ import static org.junit.Assert.assertEquals;
  * Meeting filter feature unit test
  */
 public class MeetingFiltersTest {
-
     private MeetingViewModel mMeetingViewModel;
 
     @Rule
@@ -33,6 +38,7 @@ public class MeetingFiltersTest {
 
     @Before
     public void setup() {
+        DI.generateNewApiService();
         mMeetingViewModel = new MeetingViewModel();
     }
 

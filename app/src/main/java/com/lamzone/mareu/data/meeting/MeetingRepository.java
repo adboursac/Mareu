@@ -1,7 +1,6 @@
 package com.lamzone.mareu.data.meeting;
 
 
-import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.service.MeetingApiService;
 
@@ -10,23 +9,28 @@ import java.util.List;
 
 public class MeetingRepository {
 
-    private static final MeetingApiService service = DI.getMeetingApiService();
-    private List<Meeting> mMeetingsCache = new ArrayList<>();
+    private final MeetingApiService mService;
+    private List<Meeting> mMeetingsCache;
+
+    public MeetingRepository(MeetingApiService service) {
+        mService = service;
+        mMeetingsCache = new ArrayList<>();
+    }
 
     public List<Meeting> getCachedMeetings() {
         return mMeetingsCache;
     }
 
     public List<Meeting> fetchMeetings() {
-        mMeetingsCache = service.getMeetings();
+        mMeetingsCache = mService.getMeetings();
         return mMeetingsCache;
     }
 
     public void deleteMeeting(Meeting meeting) {
-        service.deleteMeeting(meeting);
+        mService.deleteMeeting(meeting);
     }
 
     public void addMeeting(Meeting meeting) {
-        service.addMeeting(meeting);
+        mService.addMeeting(meeting);
     }
 }

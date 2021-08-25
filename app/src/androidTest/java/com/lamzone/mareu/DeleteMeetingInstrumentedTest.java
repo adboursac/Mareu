@@ -1,5 +1,6 @@
 package com.lamzone.mareu;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.ui.MainActivity;
 import com.lamzone.mareu.utils.DeleteButtonAction;
 
@@ -33,6 +34,7 @@ public class DeleteMeetingInstrumentedTest {
 
     @Before
     public void setUp() {
+        DI.generateNewApiService();
         mActivity = mActivityRule.getActivity();
         assertThat(mActivity, notNullValue());
     }

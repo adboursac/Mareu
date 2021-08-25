@@ -5,6 +5,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
 import com.lamzone.mareu.ui.MainActivity;
 import com.lamzone.mareu.ui.MeetingDetailsFragment;
@@ -39,6 +40,7 @@ public class ShowMeetingDetailsInstrumentedTest {
 
     @Before
     public void setUp() {
+        DI.generateNewApiService();
         mActivity = mActivityRule.getActivity();
         assertThat(mActivity, notNullValue());
     }

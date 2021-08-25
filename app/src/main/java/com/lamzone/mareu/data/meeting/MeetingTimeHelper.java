@@ -13,6 +13,12 @@ public class MeetingTimeHelper {
     public static final int MEETING_MIN_DURATION = 15;
     public static final int MEETING_MAX_DURATION = 240;
 
+    /**
+     * Return the first occurrence of meeting, in given list, overlapping with given meeting
+     * @param meeting search overlapping meetings with this meeting
+     * @param meetingsFullList search overlapping meetings in this list
+     * @return
+     */
     public static Meeting findOverlappingMeetings(Meeting meeting, List<Meeting> meetingsFullList) {
         for (Meeting m : meetingsFullList) {
             if (meeting.getRoom() == m.getRoom() &&
@@ -26,6 +32,16 @@ public class MeetingTimeHelper {
         return null;
     }
 
+    /**
+     * check if end time of given meeting respects business rules :
+     * - minimum meeting duration
+     * - maximum meeting duration
+     * - a meeting can't end before its start time
+     * - a meeting can't end after midnight
+     * Return a message id corresponding to each cases.
+     * @param meeting
+     * @return 0 if end time is correct, id of invalidity message if it isn't.
+     */
     public static int checkEndTime(Meeting meeting) {
         LocalTime midnight = LocalTime.of(0, 0);
         LocalTime midnightLatestStartTime = midnight
@@ -52,6 +68,16 @@ public class MeetingTimeHelper {
         return 0;
     }
 
+    /**
+     * return a filtered list from given meeting list applying a given hour filter with from
+     * Filter acts differently whether the filter values ​​are filled or null
+     * @param meetings
+     * @param hourFilter Array that contain two LocalTime values: fromTime and toTime
+     * @return - unfiltered list, when both filter values are null.
+     * - meetings with start time in range [fromTime,toTime[ excluded, when toTime value is null.
+     * - meetings with end time before or equal to parameter toTime, when fromTime is null.
+     * - meetings with time slot in inclusive range [fromTime, toTime]
+     */
     public static List<Meeting> filterMeetings(List<Meeting> meetings, LocalTime[] hourFilter) {
         if (hourFilter[0] == null && hourFilter[1] == null) return meetings;
 
@@ -64,7 +90,7 @@ public class MeetingTimeHelper {
     }
 
     /**
-     * returns meetings start meetings with range [start time, end time[
+     * returns meetings with start time in range [start time, end time[
      * (end time excluded)
      * @param fullList
      * @param filteredList

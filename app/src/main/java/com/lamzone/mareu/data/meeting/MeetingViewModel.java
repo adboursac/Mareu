@@ -8,12 +8,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.lamzone.mareu.R;
+import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.List;
 
 public class MeetingViewModel extends ViewModel {
@@ -28,7 +30,7 @@ public class MeetingViewModel extends ViewModel {
     private boolean mEmptyRoomFilter;
 
     public MeetingViewModel() {
-        mMeetingRepository = new MeetingRepository();
+        mMeetingRepository = new MeetingRepository(DI.getMeetingApiService());
         mMeetingsLiveData = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
@@ -77,6 +79,11 @@ public class MeetingViewModel extends ViewModel {
         applyFilters();
     }
 
+    /**
+     * get a meeting by id
+     * @param id
+     * @return
+     */
     public Meeting getMeeting(long id) {
         List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
         for (Meeting meeting : meetings) {
@@ -85,6 +92,16 @@ public class MeetingViewModel extends ViewModel {
         return null;
     }
 
+    /**
+     * Check if given meeting can be added according to business rules :
+     * - fields can't be empty
+     * - must contain at least two member emails
+     * - end time must respect business rules
+     * - meeting can't overlap another booked meeting
+     * @param meeting
+     * @param resources
+     * @return empty String if meeting is valid, or message description of what is wrong.
+     */
     public String checkMeetingValidity(Meeting meeting, Resources resources) {
         int messageId = checkMeetingUncompletedFields(meeting);
         if (messageId != 0) return resources.getString(messageId);
@@ -123,6 +140,11 @@ public class MeetingViewModel extends ViewModel {
         Arrays.fill(mRoomFilter, false);
     }
 
+    /**
+     * get Room item position in existing Rooms.
+     * @param room
+     * @return
+     */
     private int getRoomPosition(Room room) {
         for (int i = 0; i < mRooms.length; i++) {
             if (mRooms[i].getNameId() == room.getNameId()) return i;
@@ -148,6 +170,11 @@ public class MeetingViewModel extends ViewModel {
         Arrays.fill(mTimeFilter, null);
     }
 
+    /**
+     * generate String from filter's fromTime value, for UI display.
+     * @param context
+     * @return
+     */
     public String getFromTimeString(Context context) {
         LocalTime fromTime = mTimeFilter[0];
         if (fromTime != null) return MeetingTimeHelper.toString(fromTime);
@@ -156,6 +183,11 @@ public class MeetingViewModel extends ViewModel {
         }
     }
 
+    /**
+     * generate String from filter's toTime value, for UI display.
+     * @param context
+     * @return
+     */
     public String getToTimeString(Context context) {
         LocalTime endTime = mTimeFilter[1];
         if (endTime != null) return MeetingTimeHelper.toString(endTime);

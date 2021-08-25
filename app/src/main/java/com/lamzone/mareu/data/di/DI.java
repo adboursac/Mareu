@@ -8,7 +8,7 @@ import com.lamzone.mareu.data.service.MeetingApiService;
  */
 public class DI {
 
-    public static final MeetingApiService service = new DummyMeetingApiService();
+    private static MeetingApiService service = new DummyMeetingApiService();
 
     /**
      * Get instance of @{@link MeetingApiService}
@@ -17,11 +17,10 @@ public class DI {
     public static MeetingApiService getMeetingApiService() { return service; }
 
     /**
-     * Get always a new instance of @{@link MeetingApiService}. Useful for tests.
+     * generate a new instance of @{@link MeetingApiService}. Useful for tests.
      * @return
      */
-    public static MeetingApiService getNewInstanceApiService() {
-        return new DummyMeetingApiService();
+    public static void generateNewApiService() {
+        service = new DummyMeetingApiService();
     }
-
 }
