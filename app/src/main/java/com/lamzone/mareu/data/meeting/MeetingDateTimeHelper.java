@@ -3,28 +3,31 @@ package com.lamzone.mareu.data.meeting;
 import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeetingTimeHelper {
+public class MeetingDateTimeHelper {
 
-    public static final int MEETING_MIN_DURATION = 15;
-    public static final int MEETING_MAX_DURATION = 240;
+    public static final int MEETING_MIN_DURATION = 15;//15 minutes
+    public static final int MEETING_MAX_DURATION = 240;//4 hours
 
     /**
      * Return the first occurrence of meeting, in given list, overlapping with given meeting
-     * @param meeting search overlapping meetings with this meeting
+     *
+     * @param meeting          search overlapping meetings with this meeting
      * @param meetingsFullList search overlapping meetings in this list
      * @return
      */
     public static Meeting findOverlappingMeetings(Meeting meeting, List<Meeting> meetingsFullList) {
         for (Meeting m : meetingsFullList) {
             if (meeting.getRoom() == m.getRoom() &&
-                    (meeting.getStartTime().equals(m.getStartTime()) ||
-                            (meeting.getStartTime().isBefore(m.getEndTime()) &&
-                                    meeting.getEndTime().isAfter(m.getStartTime())
+                    (meeting.getStart().equals(m.getStart()) ||
+                            (meeting.getStart().isBefore(m.getEnd()) &&
+                                    meeting.getEnd().isAfter(m.getStart())
                             )
                     )
             ) return m;
@@ -39,6 +42,7 @@ public class MeetingTimeHelper {
      * - a meeting can't end before its start time
      * - a meeting can't end after midnight
      * Return a message id corresponding to each cases.
+     *
      * @param meeting
      * @return 0 if end time is correct, id of invalidity message if it isn't.
      */
@@ -46,22 +50,23 @@ public class MeetingTimeHelper {
         LocalTime midnight = LocalTime.of(0, 0);
         LocalTime midnightLatestStartTime = midnight
                 .minusMinutes(MEETING_MAX_DURATION);
+        LocalTime startTime = meeting.getStart().toLocalTime();
+        LocalTime endTime = meeting.getEnd().toLocalTime();
 
-        if (meeting.getEndTime().equals(midnight)) {
-            if (meeting.getStartTime().isBefore(midnightLatestStartTime))
+        if (endTime.equals(midnight)) {
+            if (startTime.isBefore(midnightLatestStartTime))
                 return R.string.invalidMeetingMaxDuration;
-            if (midnight.minusMinutes(MEETING_MIN_DURATION).isBefore(meeting.getStartTime()))
+            if (midnight.minusMinutes(MEETING_MIN_DURATION).isBefore(startTime))
                 return R.string.invalidMeetingMinDuration;
         } else {
-            if (meeting.getStartTime().isAfter(midnightLatestStartTime)
-                    && meeting.getEndTime().isBefore(meeting.getStartTime()))
+            if (startTime.isAfter(midnightLatestStartTime) && endTime.isBefore(startTime))
                 return R.string.invalidMeetingEndAfterMidnight;
-            if (meeting.getStartTime().isAfter(meeting.getEndTime()))
+            if (startTime.isAfter(endTime))
                 return R.string.invalidMeetingEndsBeforeItStarts;
-            if (meeting.getStartTime().plusMinutes(MEETING_MIN_DURATION).isAfter(meeting.getEndTime()))
+            if (startTime.plusMinutes(MEETING_MIN_DURATION).isAfter(endTime))
                 return R.string.invalidMeetingMinDuration;
-            if (meeting.getStartTime().plusMinutes(MEETING_MAX_DURATION).isBefore(meeting.getEndTime())
-                    && meeting.getStartTime().isBefore(midnightLatestStartTime))
+            if (startTime.plusMinutes(MEETING_MAX_DURATION).isBefore(endTime)
+                    && startTime.isBefore(midnightLatestStartTime))
                 return R.string.invalidMeetingMaxDuration;
         }
 
@@ -71,6 +76,7 @@ public class MeetingTimeHelper {
     /**
      * return a filtered list from given meeting list applying a given hour filter with from
      * Filter acts differently whether the filter values ​​are filled or null
+     *
      * @param meetings
      * @param hourFilter Array that contain two LocalTime values: fromTime and toTime
      * @return - unfiltered list, when both filter values are null.
@@ -78,55 +84,68 @@ public class MeetingTimeHelper {
      * - meetings with end time before or equal to parameter toTime, when fromTime is null.
      * - meetings with time slot in inclusive range [fromTime, toTime]
      */
-    public static List<Meeting> filterMeetings(List<Meeting> meetings, LocalTime[] hourFilter) {
+    public static List<Meeting> filterMeetings(List<Meeting> meetings, LocalDateTime[] hourFilter) {
         if (hourFilter[0] == null && hourFilter[1] == null) return meetings;
 
         ArrayList<Meeting> filteredList = new ArrayList<>();
-        if (hourFilter[0] == null) includeEndedMeetings(meetings, filteredList, hourFilter[1]);
-        else if (hourFilter[1] == null) includeOverlappingMeetings(meetings, filteredList, hourFilter[0]);
-        else includeContainedMeetings(meetings, filteredList, hourFilter[0], hourFilter[1]);
-
+        if (hourFilter[0] == null) includeEndedMeetings(
+                meetings, filteredList,
+                hourFilter[1]);
+        else if (hourFilter[1] == null)
+            includeOverlappingMeetings(
+                    meetings, filteredList,
+                    hourFilter[0]);
+        else includeContainedMeetings(
+                    meetings, filteredList,
+                    hourFilter[0], hourFilter[1]);
         return filteredList;
     }
 
     /**
      * returns meetings with start time in range [start time, end time[
      * (end time excluded)
+     *
      * @param fullList
      * @param filteredList
-     * @param time
+     * @param dateTime
      */
-    private static void includeOverlappingMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime time) {
+    private static void includeOverlappingMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalDateTime dateTime) {
         for (Meeting m : fullList) {
-            boolean upperEqualMinRange = !time.isBefore(m.getStartTime());
-            boolean underMaxRange = m.getEndTime().isAfter(time);
-            if (upperEqualMinRange && underMaxRange) filteredList.add(m);
+            LocalDate date = dateTime.toLocalDate();
+            LocalTime time = dateTime.toLocalTime();
+            if (m.getStart().toLocalDate().isEqual(date)) {
+                boolean upperEqualMinRange = !time.isBefore(m.getStart().toLocalTime());
+                boolean underMaxRange = m.getEnd().toLocalTime().isAfter(time);
+                if (upperEqualMinRange && underMaxRange) filteredList.add(m);
+            }
         }
     }
 
     /**
-     * returns meetings with end time before or equal to parameter time
+     * returns meetings with end time before or equal to parameter dateTime
+     *
      * @param fullList
      * @param filteredList
-     * @param time
+     * @param dateTime
      */
-    private static void includeEndedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime time) {
+    private static void includeEndedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalDateTime dateTime) {
         for (Meeting m : fullList) {
-            if (!m.getEndTime().isAfter(time)) filteredList.add(m);
+            if (!m.getEnd().isAfter(dateTime)) filteredList.add(m);
         }
     }
 
     /**
      * add meetings according to inclusive range [start time, end time]
+     *
      * @param fullList
      * @param filteredList
      * @param start
      * @param end
      */
-    private static void includeContainedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalTime start, LocalTime end) {
+    private static void includeContainedMeetings(List<Meeting> fullList, List<Meeting> filteredList, LocalDateTime start, LocalDateTime end) {
         for (Meeting m : fullList) {
-            boolean upperEqualMinRange = !m.getStartTime().isBefore(start);
-            boolean underEqualMaxRange = !m.getEndTime().isAfter(end);
+            boolean upperEqualMinRange = !m.getStart().isBefore(start);
+            boolean underEqualMaxRange = !m.getEnd().isAfter(end);
             if (upperEqualMinRange && underEqualMaxRange) filteredList.add(m);
         }
     }
@@ -135,16 +154,30 @@ public class MeetingTimeHelper {
         return DateTimeFormatter.ofPattern("HH:mm");
     }
 
+    public static String toString(LocalDateTime time) {
+        return time.format(getTimeFormatter());
+    }
+
     public static String toString(LocalTime time) {
         return time.format(getTimeFormatter());
     }
 
-    public static String toString(LocalTime start, LocalTime end) {
+    public static String toString(LocalDateTime start, LocalDateTime end) {
         return toString(start) + " - " + toString(end);
     }
 
-    public static LocalTime toTime(String timeString) {
-        return toTime(timeString, null);
+    public static LocalDateTime toDateTime(String timeString) {
+        return toDateTime(timeString, null);
+    }
+
+    public static LocalDateTime toDateTime(String timeString, LocalDateTime defaultTime) {
+        LocalDateTime time;
+        try {
+            time = LocalDateTime.parse(timeString, getTimeFormatter());
+        } catch (Exception e) {
+            time = defaultTime;
+        }
+        return time;
     }
 
     public static LocalTime toTime(String timeString, LocalTime defaultTime) {

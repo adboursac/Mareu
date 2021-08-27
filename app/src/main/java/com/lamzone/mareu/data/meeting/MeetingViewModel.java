@@ -12,10 +12,10 @@ import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.List;
 
 public class MeetingViewModel extends ViewModel {
@@ -23,7 +23,7 @@ public class MeetingViewModel extends ViewModel {
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
 
-    private LocalTime[] mTimeFilter;
+    private LocalDateTime[] mTimeFilter;
 
     private boolean[] mRoomFilter;
     private Room[] mRooms;
@@ -106,11 +106,11 @@ public class MeetingViewModel extends ViewModel {
         int messageId = checkMeetingUncompletedFields(meeting);
         if (messageId != 0) return resources.getString(messageId);
 
-        messageId = MeetingTimeHelper.checkEndTime(meeting);
+        messageId = MeetingDateTimeHelper.checkEndTime(meeting);
         if (messageId != 0) return resources.getString(messageId);
 
         List<Meeting> updatedMeetingList = mMeetingRepository.fetchMeetings();
-        Meeting overlappingMeeting = MeetingTimeHelper.findOverlappingMeetings(meeting, updatedMeetingList);
+        Meeting overlappingMeeting = MeetingDateTimeHelper.findOverlappingMeetings(meeting, updatedMeetingList);
         if (overlappingMeeting != null)
             return generateOverlappingMeetingMessage(overlappingMeeting, resources);
         return "";
@@ -118,17 +118,17 @@ public class MeetingViewModel extends ViewModel {
 
     private String generateOverlappingMeetingMessage(Meeting overlappingMeeting, Resources resources) {
         return resources.getString(R.string.invalidMeetingTimeSlot) + "\n" +
-                MeetingTimeHelper.toString(
-                        overlappingMeeting.getStartTime(),
-                        overlappingMeeting.getEndTime());
+                MeetingDateTimeHelper.toString(
+                        overlappingMeeting.getStart(),
+                        overlappingMeeting.getEnd());
     }
 
     private int checkMeetingUncompletedFields(Meeting meeting) {
         if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
             return R.string.invalidMeetingTitle;
         if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
-        if (meeting.getStartTime() == null) return R.string.invalidMeetingStartTimeEmpty;
-        if (meeting.getEndTime() == null) return R.string.invalidMeetingEndTimeEmpty;
+        if (meeting.getStart() == null) return R.string.invalidMeetingStartTimeEmpty;
+        if (meeting.getEnd() == null) return R.string.invalidMeetingEndTimeEmpty;
         if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
         return 0;
     }
@@ -166,7 +166,7 @@ public class MeetingViewModel extends ViewModel {
     }
 
     private void initTimeFilter() {
-        mTimeFilter = new LocalTime[2];
+        mTimeFilter = new LocalDateTime[2];
         Arrays.fill(mTimeFilter, null);
     }
 
@@ -176,8 +176,8 @@ public class MeetingViewModel extends ViewModel {
      * @return
      */
     public String getFromTimeString(Context context) {
-        LocalTime fromTime = mTimeFilter[0];
-        if (fromTime != null) return MeetingTimeHelper.toString(fromTime);
+        LocalDateTime fromTime = mTimeFilter[0];
+        if (fromTime != null) return MeetingDateTimeHelper.toString(fromTime);
         else {
             return context.getResources().getString(R.string.from);
         }
@@ -189,23 +189,23 @@ public class MeetingViewModel extends ViewModel {
      * @return
      */
     public String getToTimeString(Context context) {
-        LocalTime endTime = mTimeFilter[1];
-        if (endTime != null) return MeetingTimeHelper.toString(endTime);
+        LocalDateTime endTime = mTimeFilter[1];
+        if (endTime != null) return MeetingDateTimeHelper.toString(endTime);
         else {
             return context.getResources().getString(R.string.to);
         }
     }
 
     public void setTimeFilter(String from, String to) {
-        LocalTime fromTime = MeetingTimeHelper.toTime(from);
-        LocalTime toTime = MeetingTimeHelper.toTime(to);
-        mTimeFilter = new LocalTime[]{fromTime, toTime};
+        LocalDateTime fromTime = MeetingDateTimeHelper.toDateTime(from);
+        LocalDateTime toTime = MeetingDateTimeHelper.toDateTime(to);
+        mTimeFilter = new LocalDateTime[]{fromTime, toTime};
     }
 
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = MeetingTimeHelper.filterMeetings(filteredMeetings, mTimeFilter);
+        filteredMeetings = MeetingDateTimeHelper.filterMeetings(filteredMeetings, mTimeFilter);
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 

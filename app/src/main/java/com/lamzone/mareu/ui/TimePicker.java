@@ -5,8 +5,9 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingDateTimeHelper;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class TimePicker {
@@ -16,7 +17,7 @@ public class TimePicker {
     }
 
     public static void openTimePicker(TextInputEditText textInput, FragmentManager fragmentManager) {
-        LocalTime time = MeetingTimeHelper.toTime(textInput.getText().toString(), LocalTime.of(0, 0));
+        LocalTime time = MeetingDateTimeHelper.toTime(textInput.getText().toString(), LocalTime.of(0, 0));
 
         MaterialTimePicker picker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -28,7 +29,7 @@ public class TimePicker {
 
         picker.addOnPositiveButtonClickListener(v -> {
             LocalTime pickedTime = LocalTime.of(picker.getHour(), picker.getMinute());
-            textInput.setText(MeetingTimeHelper.toString(pickedTime));
+            textInput.setText(MeetingDateTimeHelper.toString(pickedTime));
         });
     }
 }

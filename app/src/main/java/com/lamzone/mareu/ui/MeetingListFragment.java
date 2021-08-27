@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,9 +36,9 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
     private RecyclerView mRecyclerView;
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         mBinding = FragmentMeetingListBinding.inflate(inflater, container, false);
 
         initRecyclerView(mBinding.getRoot());
@@ -62,6 +63,9 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         mMeetingViewModel.getMeetingsLiveData().observe(getViewLifecycleOwner(), meetings -> {
             mMeetings.clear();
             mMeetings.addAll(meetings);
+            if (meetings.size() == 0) {
+                Toast.makeText(getContext(), R.string.emptyMeetingList, Toast.LENGTH_LONG).show();
+            }
             mRecyclerView.getAdapter().notifyDataSetChanged();
         });
     }
@@ -87,7 +91,7 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
                 Navigation.findNavController(getView()).navigate(R.id.navigateToHourFilter);
                 break;
             default:
-                Log.w("MeetingListFragment","onOptionsItemSelected: didn't match any menu item");
+                Log.w("MeetingListFragment", "onOptionsItemSelected: didn't match any menu item");
         }
         return true;
     }

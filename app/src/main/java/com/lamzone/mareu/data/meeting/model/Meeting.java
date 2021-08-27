@@ -4,9 +4,9 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingDateTimeHelper;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,18 +15,18 @@ public class Meeting {
     private final long mId;
     private String mTitle;
     private Room mRoom;
-    private LocalTime mStartTime;
-    private LocalTime mEndTime;
+    private LocalDateTime mStart;
+    private LocalDateTime mEnd;
 
     private List<String> mMemberList;
 
 
-    public Meeting(long id, String title, Room room, LocalTime startTime, LocalTime endTime, List<String> memberList) {
+    public Meeting(long id, String title, Room room, LocalDateTime start, LocalDateTime end, List<String> memberList) {
         mId = id;
         mTitle = title;
         mRoom = room;
-        mStartTime = startTime;
-        mEndTime = endTime;
+        mStart = start;
+        mEnd = end;
         mMemberList = memberList;
     }
 
@@ -42,12 +42,12 @@ public class Meeting {
         return mRoom;
     }
 
-    public LocalTime getStartTime() {
-        return mStartTime;
+    public LocalDateTime getStart() {
+        return mStart;
     }
 
-    public LocalTime getEndTime() {
-        return mEndTime;
+    public LocalDateTime getEnd() {
+        return mEnd;
     }
 
     public List<String> getMemberList() {
@@ -62,12 +62,12 @@ public class Meeting {
         mRoom = room;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        mStartTime = startTime;
+    public void setStart(LocalDateTime start) {
+        mStart = start;
     }
 
-    public void setEndTime(LocalTime endTime) {
-        mEndTime = endTime;
+    public void setEnd(LocalDateTime end) {
+        mEnd = end;
     }
 
     @Override
@@ -78,13 +78,13 @@ public class Meeting {
         return Objects.equals(mId, meeting.getId()) &&
                 Objects.equals(mTitle, meeting.getTitle()) &&
                 Objects.equals(mRoom, meeting.getRoom()) &&
-                Objects.equals(mStartTime, meeting.getStartTime()) &&
-                Objects.equals(mEndTime, meeting.getEndTime());
+                Objects.equals(mStart, meeting.getStart()) &&
+                Objects.equals(mEnd, meeting.getEnd());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle, mRoom, mStartTime, mEndTime);
+        return Objects.hash(mId, mTitle, mRoom, mStart, mEnd);
     }
 
     @NonNull
@@ -94,8 +94,8 @@ public class Meeting {
                 System.currentTimeMillis(),
                 mTitle,
                 mRoom,
-                mStartTime,
-                mEndTime,
+                mStart,
+                mEnd,
                 new ArrayList<>(mMemberList)
         );
     }
@@ -112,7 +112,7 @@ public class Meeting {
     public String shortDescription(Resources resources) {
         return getTitle() +
                 " • " +
-                MeetingTimeHelper.toString(mStartTime) +
+                MeetingDateTimeHelper.toString(mStart) +
                 " • " +
                 mRoom.getName(resources);
     }

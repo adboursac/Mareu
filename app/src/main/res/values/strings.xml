@@ -18,11 +18,14 @@
     <string name="cancel">Cancel</string>
     <string name="membersList">Members List</string>
     <string name="addNewMember">Add a member email</string>
-    <string name="invalidMeetingTitle">The title must have at least two caracters</string>
+    <string name="filterDescription">Filter description</string>
+    <string name="emptyMeetingList">There are no meeting matching your filters criteria</string>
+    <string name="invalidMeetingTitle">The title must have at least two characters</string>
     <string name="invalidMeetingRoomEmpty">Please select a room</string>
     <string name="invalidMeetingStartTimeEmpty">Please select a start time</string>
     <string name="invalidMeetingEndTimeEmpty">Please select an end time</string>
     <string name="invalidMeetingMiniumTwoMembers">At least two emails are required</string>
+    <string name="timeFilterDescription"></string>
     <string name="invalidMeetingTimeSlot">Room is already reserved with:</string>
     <string name="invalidMeetingMinDuration">Meeting is below minimum duration</string>
     <string name="invalidMeetingMaxDuration">Meeting is above maximum duration</string>

@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingDateTimeHelper;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.databinding.FragmentMeetingDetailsBinding;
@@ -38,8 +38,8 @@ public class MeetingDetailsFragment extends Fragment {
 
         mBinding.titleInput.setText(meeting.getTitle());
         mBinding.roomInput.setText(meeting.getRoom().getName(getResources()));
-        mBinding.startTimeInput.setText(MeetingTimeHelper.toString(meeting.getStartTime()));
-        mBinding.endTimeInput.setText(MeetingTimeHelper.toString(meeting.getEndTime()));
+        mBinding.startTimeInput.setText(MeetingDateTimeHelper.toString(meeting.getStart()));
+        mBinding.endTimeInput.setText(MeetingDateTimeHelper.toString(meeting.getEnd()));
         mBinding.membersListInput.setText(Meeting.memberListToString(meeting.getMemberList(), "\n"));
     }
 }

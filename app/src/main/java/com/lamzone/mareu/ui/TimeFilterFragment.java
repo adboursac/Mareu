@@ -3,6 +3,7 @@ package com.lamzone.mareu.ui;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,15 +21,17 @@ import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.databinding.FragmentHourFilterBinding;
 
+import java.util.Arrays;
+
 public class TimeFilterFragment extends Fragment {
 
     private MeetingViewModel mMeetingViewModel;
     private FragmentHourFilterBinding mBinding;
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         mBinding = FragmentHourFilterBinding.inflate(inflater, container, false);
 
         initData();
@@ -51,6 +54,15 @@ public class TimeFilterFragment extends Fragment {
         TimePicker.setTimePickerOnTextInput(mBinding.toTimeInput, getParentFragmentManager());
     }
 
+    private void updateFilterDescription(String input, String output) {
+        if (input=="" && output=="") {
+            mBinding.filterDescriptionInput.setText("PAS de filtre");
+        }
+        else {
+
+        }
+    }
+
     public void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
             mMeetingViewModel.setTimeFilter(
@@ -69,8 +81,14 @@ public class TimeFilterFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        mBinding.fromTimeInput.setText("");
-        mBinding.toTimeInput.setText("");
+        switch (item.getItemId()) {
+            case R.id.hour_filter_cancel:
+                mBinding.fromTimeInput.setText("");
+                mBinding.toTimeInput.setText("");
+                break;
+            default:
+                Log.w("TimeFilterFragment", "onOptionsItemSelected: didn't match any menu item");
+        }
         return true;
     }
 }

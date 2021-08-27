@@ -8,9 +8,8 @@ import androidx.test.rule.ActivityTestRule;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lamzone.mareu.data.di.DI;
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingDateTimeHelper;
 import com.lamzone.mareu.data.meeting.model.Meeting;
-import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
 import com.lamzone.mareu.ui.MainActivity;
 import com.lamzone.mareu.utils.GetElementFromMatch;
@@ -19,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,13 +88,13 @@ public class MeetingFiltersInstrumentedTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(2),
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(3)
         ));
-        LocalTime filterFromTime = LocalTime.of(13, 0);
+        LocalDateTime filterFromTime = LocalTime.of(13, 0);
         // Perform click on filter by hour
         onView(withId(R.id.meeting_menu_filter_hour)).perform(click());
         //set time slot
         TextInputEditText fromTimeInput = mActivity.findViewById(R.id.fromTimeInput);
         mActivity.runOnUiThread(() -> {
-            fromTimeInput.setText(MeetingTimeHelper.toString(filterFromTime));
+            fromTimeInput.setText(MeetingDateTimeHelper.toString(filterFromTime));
         });
         // click apply filter
         onView(withId(R.id.applyButton)).perform(click());
@@ -124,13 +124,13 @@ public class MeetingFiltersInstrumentedTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(1),
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
         ));
-        LocalTime filterToTime = LocalTime.of(13, 0);
+        LocalDateTime filterToTime = LocalTime.of(13, 0);
         // Perform click on filter by hour
         onView(withId(R.id.meeting_menu_filter_hour)).perform(click());
         //set time slot
         TextInputEditText toTimeInput = mActivity.findViewById(R.id.toTimeInput);
         mActivity.runOnUiThread(() -> {
-            toTimeInput.setText(MeetingTimeHelper.toString(filterToTime));
+            toTimeInput.setText(MeetingDateTimeHelper.toString(filterToTime));
         });
         // click apply filter
         onView(withId(R.id.applyButton)).perform(click());
@@ -162,16 +162,16 @@ public class MeetingFiltersInstrumentedTest {
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
                 DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
         ));
-        LocalTime filterFromTime = LocalTime.of(9, 30);
-        LocalTime filterToTime = LocalTime.of(11, 30);
+        LocalDateTime filterFromTime = LocalTime.of(9, 30);
+        LocalDateTime filterToTime = LocalTime.of(11, 30);
         // Perform click on filter by hour
         onView(withId(R.id.meeting_menu_filter_hour)).perform(click());
         //set time slot
         TextInputEditText fromTimeInput = mActivity.findViewById(R.id.fromTimeInput);
         TextInputEditText toTimeInput = mActivity.findViewById(R.id.toTimeInput);
         mActivity.runOnUiThread(() -> {
-            fromTimeInput.setText(MeetingTimeHelper.toString(filterFromTime));
-            toTimeInput.setText(MeetingTimeHelper.toString(filterToTime));
+            fromTimeInput.setText(MeetingDateTimeHelper.toString(filterFromTime));
+            toTimeInput.setText(MeetingDateTimeHelper.toString(filterToTime));
         });
         // click apply filter
         onView(withId(R.id.applyButton)).perform(click());

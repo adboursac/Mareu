@@ -2,26 +2,18 @@ package com.lamzone.mareu.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.navigation.NavAction;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.MeetingDeleteCommand;
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
-import com.lamzone.mareu.data.meeting.MeetingViewModel;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.databinding.MeetingItemBinding;
 
-import java.text.BreakIterator;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<MeetingListRecyclerViewAdapter.ViewHolder> {

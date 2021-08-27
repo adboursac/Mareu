@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/room_filter_cancel"
+        android:id="@+id/hour_filter_cancel"
         android:icon="@drawable/ic_baseline_cancel_24"
         android:title="@string/cancel"
         app:showAsAction="always" />

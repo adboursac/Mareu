@@ -2,7 +2,7 @@ package com.lamzone.mareu;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lamzone.mareu.data.di.DI;
-import com.lamzone.mareu.data.meeting.MeetingTimeHelper;
+import com.lamzone.mareu.data.meeting.MeetingDateTimeHelper;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 import com.lamzone.mareu.data.service.DummyMeetingGenerator;
@@ -83,8 +83,8 @@ public class CreateMeetingInstrumentedTest {
         TextInputEditText startTimeInput = mActivity.findViewById(R.id.startTimeInput);
         TextInputEditText endTimeInput = mActivity.findViewById(R.id.endTimeInput);
         mActivity.runOnUiThread(() -> {
-            startTimeInput.setText(MeetingTimeHelper.toString(expectedMeeting.getStartTime()));
-            endTimeInput.setText(MeetingTimeHelper.toString(expectedMeeting.getEndTime()));
+            startTimeInput.setText(MeetingDateTimeHelper.toString(expectedMeeting.getStart()));
+            endTimeInput.setText(MeetingDateTimeHelper.toString(expectedMeeting.getEnd()));
         });
         //Enter two member
         onView(withId(R.id.memberMailInput)).perform(typeText("email1@lamzone.com"));

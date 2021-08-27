@@ -3,6 +3,8 @@ package com.lamzone.mareu.data.service;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +15,13 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     0,
                     "Lame Keynote",
-                    Room.Luigi, LocalTime.of(9, 30),
-                    LocalTime.of(11, 30),
+                    Room.Luigi,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(9, 30)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(11, 30)),
                     new ArrayList<>(Arrays.asList(
                             "amandine@lamzone.com",
                             "luc@lamzone.com",
@@ -24,8 +31,13 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     1,
                     "AAA Games",
-                    Room.Mario, LocalTime.of(11, 15),
-                    LocalTime.of(13, 0),
+                    Room.Mario,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(11, 15)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(13, 0)),
                     new ArrayList<>(Arrays.asList(
                             "miyamoto@nintendo.jp",
                             "sonic@sega.jp",
@@ -36,8 +48,13 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     2,
                     "Unity 2021",
-                    Room.Wario, LocalTime.of(13, 0),
-                    LocalTime.of(14, 0),
+                    Room.Peach,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(13, 0)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(14, 0)),
                     new ArrayList<>(Arrays.asList(
                             "jenna@unity.com",
                             "eric@unity.com",
@@ -48,8 +65,13 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     3,
                     "Web Design",
-                    Room.Kirby, LocalTime.of(13, 0),
-                    LocalTime.of(15, 0),
+                    Room.Kirby,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(13, 0)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(15, 0)),
                     new ArrayList<>(Arrays.asList(
                             "helene@lamzone.com",
                             "marc@lamzone.com",
@@ -60,8 +82,13 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     4,
                     "Android Jetpack",
-                    Room.Donkey, LocalTime.of(14, 20),
-                    LocalTime.of(15, 00),
+                    Room.Donkey,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(14, 20)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(15, 00)),
                     new ArrayList<>(Arrays.asList(
                             "julia@android.com",
                             "mitch@android.com",
@@ -72,12 +99,51 @@ public abstract class DummyMeetingGenerator {
             new Meeting(
                     5,
                     "ViewModel",
-                    Room.Yoshi, LocalTime.of(9, 36),
-                    LocalTime.of(10, 36),
+                    Room.Yoshi,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(9, 36)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(10, 36)),
                     new ArrayList<>(Arrays.asList(
                             "florence@openclassroom.com",
                             "yacine@openclassroom.com",
                             "virgile@openclassroom.com"
+                    ))
+
+            ),
+            new Meeting(
+                    6,
+                    "Navigation Component",
+                    Room.Peach,
+                    LocalDateTime.of(
+                            LocalDate.now().plusDays(1),
+                            LocalTime.of(10, 00)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(11, 00)),
+                    new ArrayList<>(Arrays.asList(
+                            "florence@openclassroom.com",
+                            "mitch@openclassroom.com",
+                            "tiffany@openclassroom.com"
+                    ))
+
+            ),
+            new Meeting(
+                    7,
+                    "ViewModel",
+                    Room.Toad,
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(10, 30)),
+                    LocalDateTime.of(
+                            LocalDate.now(),
+                            LocalTime.of(12, 00)),
+                    new ArrayList<>(Arrays.asList(
+                            "amadine@lamzone.com",
+                            "luc@lamzone.com",
+                            "virgile@lamzone.com"
                     ))
 
             )
