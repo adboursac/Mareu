@@ -2,6 +2,7 @@
     <string name="app_name">Ma Réu</string>
     <!-- Global names -->
     <string name="meetingList">Meeting list</string>
+    <string name="list">List</string>
     <string name="addMeeting">Add a new meeting</string>
     <string name="editMeeting">Edit meeting</string>
     <string name="meetingDetails">Meeting Details</string>
@@ -9,10 +10,12 @@
     <string name="meetingRoom">Meeting room</string>
     <string name="selectARoom">Select a room</string>
     <string name="meetingDate">Meeting date</string>
+    <string name="meetingTime">Meeting time</string>
     <string name="startTime">Start time</string>
     <string name="endTime">End time</string>
     <string name="filterRooms">Filter by Room</string>
     <string name="filterDate">Filter by Date</string>
+    <string name="filterTime">Filter by time</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="selectAll">Select All</string>

@@ -51,10 +51,16 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         Room room = meeting.getRoom();
 
         holder.mMeetingItemBinding.itemTitle.setText(meeting.shortDescription(resources));
+        holder.mMeetingItemBinding.itemTimeDescription.setText(meeting.dateDescription(resources));
         holder.mMeetingItemBinding.itemMembers.setText(meeting.memberListToString(meeting.getMemberList(), ", "));
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(room.getColor(resources));
         holder.mMeetingItemBinding.itemIconLetter.setText(room.getLetter(resources));
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
+        holder.itemView.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(
+                        MeetingListFragmentDirections.navigateToMeetingDetails().setMeetingId(meeting.getId())
+                )
+        );
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,7 @@ public class MeetingViewModel extends ViewModel {
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
 
     private LocalDate mDateFilter;
+    private LocalTime mTimeFilter;
 
     private boolean[] mRoomFilter;
     private Room[] mRooms;
@@ -33,7 +35,7 @@ public class MeetingViewModel extends ViewModel {
         mMeetingsLiveData = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
-        initDateFilter();
+        initDateAndTimeFilter();
     }
 
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
@@ -48,17 +50,29 @@ public class MeetingViewModel extends ViewModel {
         return mRoomFilter;
     }
 
-    public void setRoomFilter(boolean[] roomFilter) {
-        setEmptyRoomFilter(false);
-        mRoomFilter = roomFilter;
-    }
+    public LocalDate getDateFilter() { return mDateFilter; }
+
+    public LocalTime getTimeFilter() { return mTimeFilter; }
 
     public boolean isEmptyRoomFilter() {
         return mEmptyRoomFilter;
     }
 
+    public void setRoomFilter(boolean[] roomFilter) {
+        setEmptyRoomFilter(false);
+        mRoomFilter = roomFilter;
+    }
+
     public void setEmptyRoomFilter(boolean emptyRoomFilter) {
         mEmptyRoomFilter = emptyRoomFilter;
+    }
+
+    public void setDateFilter(String dateString) {
+        mDateFilter = MeetingDateTimeHelper.stringToDate(dateString, null);
+    }
+
+    public void setTimeFilter(String timeString) {
+        mTimeFilter = MeetingDateTimeHelper.stringToTime(timeString, null);
     }
 
     public void fetchMeetings() {
@@ -76,6 +90,19 @@ public class MeetingViewModel extends ViewModel {
         mMeetingRepository.deleteMeeting(meeting);
         fetchMeetings();
         applyFilters();
+    }
+
+    /**
+     * get a meeting by id
+     * @param id
+     * @return
+     */
+    public Meeting getMeeting(long id) {
+        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
+        for (Meeting meeting : meetings) {
+            if (meeting.getId() == id) return meeting;
+        }
+        return null;
     }
 
     /**
@@ -156,12 +183,9 @@ public class MeetingViewModel extends ViewModel {
         return filteredList;
     }
 
-    private void initDateFilter() {
-        mDateFilter = null;
-    }
-
-    public void setDateFilter(String dateString) {
-        mDateFilter = MeetingDateTimeHelper.stringToDate(dateString, null);
+    private void initDateAndTimeFilter() {
+        mDateFilter = LocalDate.now();
+        mTimeFilter = null;
     }
 
     /**
@@ -174,10 +198,20 @@ public class MeetingViewModel extends ViewModel {
         else return context.getResources().getString(R.string.meetingDate);
     }
 
+    /**
+     * generate String from Time filter for UI display.
+     * @param context
+     * @return
+     */
+    public String getTimeFilterString(Context context) {
+        if (mTimeFilter != null) return MeetingDateTimeHelper.timeToString(mTimeFilter);
+        else return context.getResources().getString(R.string.meetingTime);
+    }
+
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = MeetingDateTimeHelper.filterMeetings(filteredMeetings, mDateFilter);
+        filteredMeetings = MeetingDateTimeHelper.filterMeetings(filteredMeetings, mDateFilter, mTimeFilter);
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 

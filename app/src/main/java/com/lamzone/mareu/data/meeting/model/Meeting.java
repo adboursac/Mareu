@@ -116,4 +116,10 @@ public class Meeting {
                 " • " +
                 mRoom.getName(resources);
     }
+
+    public String dateDescription(Resources resources) {
+        return MeetingDateTimeHelper.timeSlotToString(mStart,mEnd) +
+                " • " +
+                MeetingDateTimeHelper.dateToString(mStart.toLocalDate());
+    }
 }

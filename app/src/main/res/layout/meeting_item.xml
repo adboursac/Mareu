@@ -35,6 +35,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
         android:textAlignment="textStart"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -44,15 +47,32 @@
         app:layout_constraintTop_toTopOf="@+id/item_room_icon" />
 
     <TextView
+        android:id="@+id/item_timeDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:text="@string/meetingTime"
+        android:textAlignment="textStart"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/item_title"
+        app:layout_constraintEnd_toStartOf="@+id/item_delete_button"
+        app:layout_constraintStart_toEndOf="@+id/item_room_icon" />
+
+    <TextView
         android:id="@+id/item_members"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:paddingBottom="4dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:maxLines="1"
         android:text="@string/membersList"
         android:textAlignment="textStart"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/item_title"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/item_timeDescription"
         app:layout_constraintEnd_toStartOf="@+id/item_delete_button"
         app:layout_constraintStart_toEndOf="@+id/item_room_icon" />
 

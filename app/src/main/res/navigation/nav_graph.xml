@@ -18,6 +18,9 @@
         <action
             android:id="@+id/navigateToDateFilter"
             app:destination="@id/DateFilterFragment" />
+        <action
+            android:id="@+id/navigateToMeetingDetails"
+            app:destination="@id/meetingDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragmentMeetingAdd"
@@ -45,5 +48,18 @@
         <action
             android:id="@+id/navigateToMeetingList"
             app:destination="@id/fragmentMeetingList" />
+    </fragment>
+    <fragment
+        android:id="@+id/meetingDetailsFragment"
+        android:name="com.lamzone.mareu.ui.MeetingDetailsFragment"
+        android:label="@string/meetingDetails"
+        tools:layout="@layout/fragment_meeting_details" >
+        <action
+            android:id="@+id/navigateToMeetingList"
+            app:destination="@id/fragmentMeetingList" />
+        <argument
+            android:name="meetingId"
+            app:argType="long"
+            android:defaultValue="0L" />
     </fragment>
 </navigation>

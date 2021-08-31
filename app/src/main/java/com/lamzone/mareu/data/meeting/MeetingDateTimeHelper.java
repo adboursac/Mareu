@@ -84,24 +84,53 @@ public class MeetingDateTimeHelper {
     }
 
     /**
-     * return a filtered list from given date filter
+     * return a filtered list from both given date and time filter
      *
      * @param meetings
      * @param dateFilter
+     * @param timeFilter
      * @return
      */
-    public static List<Meeting> filterMeetings(List<Meeting> meetings, LocalDate dateFilter) {
-        if (dateFilter == null) return meetings;
-
-        ArrayList<Meeting> filteredList = new ArrayList<>();
-        filterByDate(meetings, filteredList, dateFilter);
+    public static List<Meeting> filterMeetings(List<Meeting> meetings,
+                                               LocalDate dateFilter,
+                                               LocalTime timeFilter) {
+        List<Meeting> filteredList = filterByDate(meetings, dateFilter);
+        filteredList = filterByTime(filteredList, timeFilter);
         return filteredList;
     }
 
-    public static void filterByDate(List<Meeting> meetings, List<Meeting> filteredList, LocalDate date) {
-        for (Meeting m : meetings) {
+    /**
+     * return a filtered list from given date filter
+     *
+     * @param fullList
+     * @param date
+     * @return
+     */
+    public static List<Meeting> filterByDate(List<Meeting> fullList, LocalDate date) {
+        if (date == null) return fullList;
+        ArrayList<Meeting> filteredList = new ArrayList<>();
+        for (Meeting m : fullList) {
             if (m.getStart().toLocalDate().equals(date)) filteredList.add(m);
         }
+        return filteredList;
+    }
+
+    /**
+     * returns meetings with start time in range [start time, end time[
+     * (end time excluded)
+     *
+     * @param fullList
+     * @param startTime
+     */
+    private static List<Meeting> filterByTime(List<Meeting> fullList, LocalTime startTime) {
+        if (startTime == null) return fullList;
+        ArrayList<Meeting> filteredList = new ArrayList<>();
+        for (Meeting m : fullList) {
+            boolean upperEqualMinRange = !startTime.isBefore(m.getStart().toLocalTime());
+            boolean underMaxRange = m.getEnd().toLocalTime().isAfter(startTime);
+            if (upperEqualMinRange && underMaxRange) filteredList.add(m);
+        }
+        return filteredList;
     }
 
     public static DateTimeFormatter getTimeFormatter() {

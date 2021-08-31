@@ -1,5 +1,6 @@
 package com.lamzone.mareu.ui;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -23,6 +25,8 @@ import com.lamzone.mareu.R;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.databinding.FragmentMeetingListBinding;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +49,7 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         initAddButton();
         setHasOptionsMenu(true);
         mMeetingViewModel.applyFilters();
+        setBarTitle();
 
         return mBinding.getRoot();
     }
@@ -68,6 +73,20 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
             }
             mRecyclerView.getAdapter().notifyDataSetChanged();
         });
+    }
+
+    private void setBarTitle() {
+        LocalDate dateFilter = mMeetingViewModel.getDateFilter();
+        LocalTime timeFilter = mMeetingViewModel.getTimeFilter();
+        if (dateFilter == null && timeFilter == null) return;
+
+        String title;
+        if (dateFilter != null && timeFilter != null ) title = getResources().getString(R.string.list);
+        else title = getResources().getString(R.string.meetingList);
+
+        if (dateFilter != null) title += " • "+ mMeetingViewModel.getDateFilterString(getContext());
+        if (timeFilter != null) title += " • "+ mMeetingViewModel.getTimeFilterString(getContext());
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(title);
     }
 
     private void initAddButton() {

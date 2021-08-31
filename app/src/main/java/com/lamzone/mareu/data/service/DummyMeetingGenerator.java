@@ -81,7 +81,7 @@ public abstract class DummyMeetingGenerator {
             ),
             new Meeting(
                     4,
-                    "Android Jetpack",
+                    "Android",
                     Room.Donkey,
                     LocalDateTime.of(
                             LocalDate.now(),

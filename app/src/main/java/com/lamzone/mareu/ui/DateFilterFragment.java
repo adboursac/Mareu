@@ -30,7 +30,7 @@ public class DateFilterFragment extends Fragment {
         mBinding = FragmentDateFilterBinding.inflate(inflater, container, false);
 
         initData();
-        initDatePickers();
+        initDateAndTimePickers();
         initApplyButton();
         setHasOptionsMenu(true);
 
@@ -41,14 +41,17 @@ public class DateFilterFragment extends Fragment {
         mMeetingViewModel = new ViewModelProvider(requireActivity()).get(MeetingViewModel.class);
     }
 
-    private void initDatePickers() {
+    private void initDateAndTimePickers() {
         mBinding.dateInput.setText(mMeetingViewModel.getDateFilterString(getContext()));
         DatePicker.setDatePickerOnTextInput(mBinding.dateInput, getParentFragmentManager());
+        mBinding.timeInput.setText(mMeetingViewModel.getTimeFilterString(getContext()));
+        TimePicker.setTimePickerOnTextInput(mBinding.timeInput, getParentFragmentManager());
     }
 
     public void initApplyButton() {
         mBinding.applyButton.setOnClickListener(v -> {
             mMeetingViewModel.setDateFilter(mBinding.dateInput.getText().toString());
+            mMeetingViewModel.setTimeFilter(mBinding.timeInput.getText().toString());
             mMeetingViewModel.applyFilters();
             Navigation.findNavController(v).navigate(R.id.navigateToMeetingList);
         });
@@ -64,6 +67,7 @@ public class DateFilterFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.hour_filter_cancel:
                 mBinding.dateInput.setText(R.string.meetingDate);
+                mBinding.timeInput.setText(R.string.meetingTime);
                 break;
             default:
                 Log.w("DateFilterFragment", "onOptionsItemSelected: didn't match any menu item");
