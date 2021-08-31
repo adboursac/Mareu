@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
-        android:id="@+id/meeting_menu_filter_hour"
-        android:icon="@drawable/ic_baseline_access_time_24"
-        android:title="@string/filterHours"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/meeting_menu_filter_room"
+        android:id="@+id/meeting_filter_drop_menu"
         android:icon="@drawable/ic_baseline_filter_list_24"
-        android:title="@string/filterRooms"
-        app:showAsAction="always" />
+        android:title="@string/filterDate"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/meeting_menu_filter_date"
+                android:title="@string/filterDate"
+                android:icon="@drawable/ic_baseline_edit_calendar_24"
+                android:contentDescription="@string/filterDate"
+                tools:ignore="HardcodedText"/>
+
+            <item
+                android:id="@+id/meeting_menu_filter_room"
+                android:title="@string/filterRooms"
+                android:icon="@drawable/ic_baseline_room_24"
+                android:contentDescription="@string/filterRooms"
+                tools:ignore="HardcodedText"/>
+        </menu>
+    </item>
+
 </menu>

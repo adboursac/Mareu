@@ -115,7 +115,7 @@ public abstract class DummyMeetingGenerator {
             ),
             new Meeting(
                     6,
-                    "Navigation Component",
+                    "Navigation",
                     Room.Peach,
                     LocalDateTime.of(
                             LocalDate.now().plusDays(1),
@@ -135,7 +135,7 @@ public abstract class DummyMeetingGenerator {
                     "ViewModel",
                     Room.Toad,
                     LocalDateTime.of(
-                            LocalDate.now(),
+                            LocalDate.now().plusDays(1),
                             LocalTime.of(10, 30)),
                     LocalDateTime.of(
                             LocalDate.now(),

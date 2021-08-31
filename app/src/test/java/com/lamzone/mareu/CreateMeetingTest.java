@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.junit.Assert.assertEquals;
@@ -47,12 +49,10 @@ public class CreateMeetingTest {
      */
     @Test
     public void repositoryAddMeetingTest() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
         Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
-        m.setStart(LocalTime.of(1,0));
-        m.setEnd(
-                m.getStart().plusMinutes(
-                        MeetingDateTimeHelper.MEETING_MIN_DURATION)
-        );
+        //move meeting to a free room on this interval
+        m.setRoom(Room.Goomba);
         mMeetingRepository.addMeeting(m);
         assertTrue(mMeetingRepository.fetchMeetings().contains(m));
     }
@@ -62,12 +62,10 @@ public class CreateMeetingTest {
      */
     @Test
     public void viewModelAddMeetingTest() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
         Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
-        m.setStart(LocalTime.of(1,0));
-        m.setEnd(
-                m.getStart().plusMinutes(
-                        MeetingDateTimeHelper.MEETING_MIN_DURATION)
-        );
+        m.setRoom(Room.Goomba);
+        //move meeting to a free room on this interval
         mMeetingViewModel.addMeeting(m);
         mMeetingViewModel.fetchMeetings();
         assertTrue(mMeetingViewModel.getMeetingsLiveData().getValue().contains(m));
@@ -78,8 +76,12 @@ public class CreateMeetingTest {
      */
     @Test
     public void sameRoomOverlappingStartTimeIsDenied() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
         Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
-        m.setEnd(m.getEnd().plusMinutes(1));
+        //shift its time slot to 10:00 - 12:00
+        m.setStart(m.getStart().plusMinutes(30));
+        m.setEnd(m.getEnd().plusMinutes(30));
+        // expect meeting to be denied
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertNotEquals("", bookingMessage);
     }
@@ -89,8 +91,12 @@ public class CreateMeetingTest {
      */
     @Test
     public void sameRoomOverlappingEndTimeIsDenied() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
         Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
-        m.setStart(m.getEnd().minusMinutes(1));
+        //shift its time slot to 9:00 - 11:00
+        m.setStart(m.getStart().minusMinutes(30));
+        m.setEnd(m.getEnd().minusMinutes(30));
+        // expect meeting to be denied
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertNotEquals("", bookingMessage);
     }
@@ -100,11 +106,44 @@ public class CreateMeetingTest {
      */
     @Test
     public void sameRoomNonOverlappingTimeIsAccepted() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
         Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
-        m.setStart(m.getEnd());
-        m.setEnd(m.getEnd().plusMinutes(MeetingDateTimeHelper.MEETING_MIN_DURATION));
+        //shift to a free time slot 17:30 - 19:30
+        m.setStart(m.getStart().plusHours(8));
+        m.setEnd(m.getEnd().plusHours(8));
+        // expect meeting to be accepted
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("", bookingMessage);
+    }
+
+    /**
+     * Ensure same room and non overlapping Date is accepted
+     */
+    @Test
+    public void sameRoomNonOverlappingDateIsAccepted() {
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        //shift date to next day
+        m.setStart(m.getStart().plusDays(1));
+        m.setEnd(m.getEnd().plusDays(1));
+        // expect meeting to be accepted
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertEquals("", bookingMessage);
+    }
+
+    /**
+     * Ensure Book meeting in the past is Denied
+     */
+    @Test
+    public void bookMeetingBeforeTodayIsDenied() {
+        //cloning meeting at Room.Luigi with date is today from 9:30 to 11:30
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        //shift date to next day
+        m.setStart(m.getStart().minusDays(1));
+        m.setEnd(m.getEnd().minusDays(1));
+        // expect meeting to be denied
+        String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
+        assertNotEquals("", bookingMessage);
     }
 
     /**
@@ -112,10 +151,9 @@ public class CreateMeetingTest {
      */
     @Test
     public void differentRoomOverlappingTimeIsAccepted() {
-        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting m = bookedMeeting.clone();
-        m.setRoom(Room.Kirby);
-        
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setRoom(Room.Goomba);
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("", bookingMessage);
     }
@@ -125,12 +163,13 @@ public class CreateMeetingTest {
      */
     @Test
     public void meetingEndAfterMidnightIsDenied() {
-        LocalTime midnight = LocalTime.of(0, 0);
-        LocalTime midnightLatestStartTime = midnight
+        LocalDateTime midnight = LocalDateTime.of(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(0, 0));
+        LocalDateTime midnightLatestStartTime = midnight
                 .minusMinutes(MeetingDateTimeHelper.MEETING_MAX_DURATION);
-
-        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting m = bookedMeeting.clone();
+        //set time slot to [midnight +1minute - MEETING_MAX_DURATION , midnight + 1minute]
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
         m.setStart(midnightLatestStartTime.plusMinutes(1));
         m.setEnd(midnight.plusMinutes(1));
 
@@ -143,15 +182,12 @@ public class CreateMeetingTest {
      */
     @Test
     public void meetingEndBeforeStartDenied() {
-        LocalTime midnight = LocalTime.of(0, 0);
-        LocalTime midnightLatestStartTime = midnight
-                .minusMinutes(MeetingDateTimeHelper.MEETING_MAX_DURATION);
-
-        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting m = bookedMeeting.clone();
-        m.setStart(midnightLatestStartTime);
-        m.setEnd(midnight.plusMinutes(1));
-
+        //cloning meeting at Room.Luigi from 9:30 to 11:30
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setRoom(Room.Goomba);
+        //set time slot to 11:30 to 9:30
+        m.setStart(m.getEnd());
+        m.setEnd(DummyMeetingGenerator.DUMMY_MEETINGS.get(0).getStart());
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("id: invalidMeetingEndsBeforeItStarts", bookingMessage);
     }
@@ -161,14 +197,18 @@ public class CreateMeetingTest {
      */
     @Test
     public void meetingExceedingMaxDurationIsDenied() {
-        LocalTime midnight = LocalTime.of(0, 0);
-        LocalTime midnightLatestStartTime = midnight
-                .minusMinutes(MeetingDateTimeHelper.MEETING_MAX_DURATION);
+        LocalDateTime start = LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(12, 0));
+        LocalDateTime end = LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(12, 1)
+                .plusMinutes(MeetingDateTimeHelper.MEETING_MAX_DURATION));
 
-        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting m = bookedMeeting.clone();
-        m.setStart(midnightLatestStartTime.minusMinutes(1));
-        m.setEnd(midnight);
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setRoom(Room.Goomba);
+        m.setStart(start);
+        m.setEnd(end);
 
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("id: invalidMeetingMaxDuration", bookingMessage);
@@ -179,14 +219,18 @@ public class CreateMeetingTest {
      */
     @Test
     public void meetingBelowMinDurationIsDenied() {
-        LocalTime midnight = LocalTime.of(0, 0);
-        LocalTime smallestEndTime = midnight
-                .plusMinutes(MeetingDateTimeHelper.MEETING_MIN_DURATION);
+        LocalDateTime start = LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(12, 30));
+        LocalDateTime end = LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(12, 29)
+                        .plusMinutes(MeetingDateTimeHelper.MEETING_MIN_DURATION));
 
-        Meeting bookedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        Meeting m = bookedMeeting.clone();
-        m.setStart(midnight);
-        m.setEnd(smallestEndTime.minusMinutes(1));
+        Meeting m = DummyMeetingGenerator.DUMMY_MEETINGS.get(0).clone();
+        m.setRoom(Room.Goomba);
+        m.setStart(start);
+        m.setEnd(end);
 
         String bookingMessage = mMeetingViewModel.checkMeetingValidity(m, mMockedResources);
         assertEquals("id: invalidMeetingMinDuration", bookingMessage);

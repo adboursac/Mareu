@@ -12,8 +12,7 @@ import com.lamzone.mareu.data.di.DI;
 import com.lamzone.mareu.data.meeting.model.Meeting;
 import com.lamzone.mareu.data.meeting.model.Room;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,7 @@ public class MeetingViewModel extends ViewModel {
     private MeetingRepository mMeetingRepository;
     private MutableLiveData<List<Meeting>> mMeetingsLiveData;
 
-    private LocalDateTime[] mTimeFilter;
+    private LocalDate mDateFilter;
 
     private boolean[] mRoomFilter;
     private Room[] mRooms;
@@ -34,7 +33,7 @@ public class MeetingViewModel extends ViewModel {
         mMeetingsLiveData = new MutableLiveData<>();
         fetchMeetings();
         initRoomFilter();
-        initTimeFilter();
+        initDateFilter();
     }
 
     public MutableLiveData<List<Meeting>> getMeetingsLiveData() {
@@ -80,22 +79,10 @@ public class MeetingViewModel extends ViewModel {
     }
 
     /**
-     * get a meeting by id
-     * @param id
-     * @return
-     */
-    public Meeting getMeeting(long id) {
-        List<Meeting> meetings = mMeetingRepository.getCachedMeetings();
-        for (Meeting meeting : meetings) {
-            if (meeting.getId() == id) return meeting;
-        }
-        return null;
-    }
-
-    /**
      * Check if given meeting can be added according to business rules :
      * - fields can't be empty
      * - must contain at least two member emails
+     * - meeting can't be set before today
      * - end time must respect business rules
      * - meeting can't overlap another booked meeting
      * @param meeting
@@ -104,6 +91,9 @@ public class MeetingViewModel extends ViewModel {
      */
     public String checkMeetingValidity(Meeting meeting, Resources resources) {
         int messageId = checkMeetingUncompletedFields(meeting);
+        if (messageId != 0) return resources.getString(messageId);
+
+        messageId = MeetingDateTimeHelper.checkBeforeToday(meeting);
         if (messageId != 0) return resources.getString(messageId);
 
         messageId = MeetingDateTimeHelper.checkEndTime(meeting);
@@ -118,7 +108,7 @@ public class MeetingViewModel extends ViewModel {
 
     private String generateOverlappingMeetingMessage(Meeting overlappingMeeting, Resources resources) {
         return resources.getString(R.string.invalidMeetingTimeSlot) + "\n" +
-                MeetingDateTimeHelper.toString(
+                MeetingDateTimeHelper.timeSlotToString(
                         overlappingMeeting.getStart(),
                         overlappingMeeting.getEnd());
     }
@@ -126,7 +116,8 @@ public class MeetingViewModel extends ViewModel {
     private int checkMeetingUncompletedFields(Meeting meeting) {
         if (meeting.getTitle() == null || meeting.getTitle().length() < 2)
             return R.string.invalidMeetingTitle;
-        if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
+        if (meeting == null) return R.string.invalidMeetingDateEmpty;
+            if (meeting.getRoom() == null) return R.string.invalidMeetingRoomEmpty;
         if (meeting.getStart() == null) return R.string.invalidMeetingStartTimeEmpty;
         if (meeting.getEnd() == null) return R.string.invalidMeetingEndTimeEmpty;
         if (meeting.getMemberList().size() < 2) return R.string.invalidMeetingMiniumTwoMembers;
@@ -165,47 +156,28 @@ public class MeetingViewModel extends ViewModel {
         return filteredList;
     }
 
-    private void initTimeFilter() {
-        mTimeFilter = new LocalDateTime[2];
-        Arrays.fill(mTimeFilter, null);
+    private void initDateFilter() {
+        mDateFilter = null;
+    }
+
+    public void setDateFilter(String dateString) {
+        mDateFilter = MeetingDateTimeHelper.stringToDate(dateString, null);
     }
 
     /**
-     * generate String from filter's fromTime value, for UI display.
+     * generate String from Date filter for UI display.
      * @param context
      * @return
      */
-    public String getFromTimeString(Context context) {
-        LocalDateTime fromTime = mTimeFilter[0];
-        if (fromTime != null) return MeetingDateTimeHelper.toString(fromTime);
-        else {
-            return context.getResources().getString(R.string.from);
-        }
-    }
-
-    /**
-     * generate String from filter's toTime value, for UI display.
-     * @param context
-     * @return
-     */
-    public String getToTimeString(Context context) {
-        LocalDateTime endTime = mTimeFilter[1];
-        if (endTime != null) return MeetingDateTimeHelper.toString(endTime);
-        else {
-            return context.getResources().getString(R.string.to);
-        }
-    }
-
-    public void setTimeFilter(String from, String to) {
-        LocalDateTime fromTime = MeetingDateTimeHelper.toDateTime(from);
-        LocalDateTime toTime = MeetingDateTimeHelper.toDateTime(to);
-        mTimeFilter = new LocalDateTime[]{fromTime, toTime};
+    public String getDateFilterString(Context context) {
+        if (mDateFilter != null) return MeetingDateTimeHelper.dateToString(mDateFilter);
+        else return context.getResources().getString(R.string.meetingDate);
     }
 
     public void applyFilters() {
         List<Meeting> filteredMeetings = mMeetingRepository.getCachedMeetings();
         filteredMeetings = applyRoomFilter(filteredMeetings);
-        filteredMeetings = MeetingDateTimeHelper.filterMeetings(filteredMeetings, mTimeFilter);
+        filteredMeetings = MeetingDateTimeHelper.filterMeetings(filteredMeetings, mDateFilter);
         mMeetingsLiveData.setValue(filteredMeetings);
     }
 

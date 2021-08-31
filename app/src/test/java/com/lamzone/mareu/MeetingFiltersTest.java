@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,52 +57,12 @@ public class MeetingFiltersTest {
      * with range [start time, end time[
      */
     @Test
-    public void filtersWithStartTimeTest() {
+    public void filtersWithDateTest() {
         List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(2),
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(3)
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(6),
+                DummyMeetingGenerator.DUMMY_MEETINGS.get(7)
         ));
-        mMeetingViewModel.setTimeFilter(MeetingDateTimeHelper.toString(LocalTime.of(13, 0)), null);
-        mMeetingViewModel.applyFilters();
-        List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
-
-        assertEquals(2, testedList.size());
-        assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
-    }
-
-    @Test
-
-    /**
-     * Ensure filter with null start time and filled end time returns meetings
-     * with end time before or equal to parameter time
-     */
-    public void filterWithEndTimeTest() {
-        List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(1),
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
-        ));
-        mMeetingViewModel.setTimeFilter(null, MeetingDateTimeHelper.toString(LocalTime.of(13, 0)));
-        mMeetingViewModel.applyFilters();
-        List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
-
-        assertEquals(3, testedList.size());
-        assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
-    }
-
-    /**
-     * Ensure filter with both filled start time and end time returns meetings
-     * according to inclusive range [start time, end time]
-     */
-    @Test
-    public void filterWithTimeRangeTest() {
-        List<Meeting> expectedList = new ArrayList<>(Arrays.asList(
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(0),
-                DummyMeetingGenerator.DUMMY_MEETINGS.get(5)
-        ));
-        mMeetingViewModel.setTimeFilter(
-                MeetingDateTimeHelper.toString(LocalTime.of(9, 30)),
-                MeetingDateTimeHelper.toString(LocalTime.of(11, 30)));
+        mMeetingViewModel.setDateFilter(MeetingDateTimeHelper.dateToString(LocalDate.now().plusDays(1)));
         mMeetingViewModel.applyFilters();
         List<Meeting> testedList = mMeetingViewModel.getMeetingsLiveData().getValue();
 

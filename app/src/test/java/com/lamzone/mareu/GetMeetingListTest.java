@@ -68,16 +68,4 @@ public class GetMeetingListTest {
         List<Meeting> expectedList = DummyMeetingGenerator.DUMMY_MEETINGS;
         assertThat(testedList, containsInAnyOrder(expectedList.toArray()));
     }
-
-    /**
-     * ensure that get a meeting by id gives the right meeting
-     */
-    @Test
-    public void viewModelGetMeetingByIdTest() {
-        mMeetingViewModel = new MeetingViewModel();
-        Meeting expectedMeeting = DummyMeetingGenerator.DUMMY_MEETINGS.get(0);
-        mMeetingViewModel.fetchMeetings();
-        Meeting testedMeeting = mMeetingViewModel.getMeeting(0);
-        assertEquals(expectedMeeting, testedMeeting);
-    }
 }

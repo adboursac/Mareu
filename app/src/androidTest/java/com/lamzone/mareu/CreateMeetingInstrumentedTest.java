@@ -19,7 +19,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.lamzone.mareu.utils.RecyclerViewItemCountAssertion.withItemCount;
@@ -29,11 +33,16 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
@@ -56,13 +65,17 @@ public class CreateMeetingInstrumentedTest {
      * creates a new meeting and check if it has been correctly created
      */
     @Test
-    public void addMeetingTest() {
+    public void addMeetingTest() throws InterruptedException {
         Meeting expectedMeeting = new Meeting(
                 0,
-                "TestTitle",
+                "Expected Title",
                 Room.Luigi,
-                LocalTime.of(18,0),
-                LocalTime.of(19,0),
+                LocalDateTime.of(
+                        LocalDate.now().plusDays(2),
+                        LocalTime.of(18, 0)),
+                LocalDateTime.of(
+                        LocalDate.now(),
+                        LocalTime.of(19, 0)),
                 null
         );
         String expectedItemTitle = expectedMeeting.shortDescription(mActivity.getResources());
@@ -79,27 +92,30 @@ public class CreateMeetingInstrumentedTest {
                 .inRoot(RootMatchers.withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .atPosition(4) //Room: Luigi
                 .perform(click());
-        //set time slot
+        //set date and time slot
+        TextInputEditText dateInput = mActivity.findViewById(R.id.dateInput);
         TextInputEditText startTimeInput = mActivity.findViewById(R.id.startTimeInput);
         TextInputEditText endTimeInput = mActivity.findViewById(R.id.endTimeInput);
         mActivity.runOnUiThread(() -> {
-            startTimeInput.setText(MeetingDateTimeHelper.toString(expectedMeeting.getStart()));
-            endTimeInput.setText(MeetingDateTimeHelper.toString(expectedMeeting.getEnd()));
+            dateInput.setText(MeetingDateTimeHelper.dateToString(expectedMeeting.getStart().toLocalDate()));
+            startTimeInput.setText(MeetingDateTimeHelper.timeToString(expectedMeeting.getStart().toLocalTime()));
+            endTimeInput.setText(MeetingDateTimeHelper.timeToString(expectedMeeting.getEnd().toLocalTime()));
         });
         //Enter two member
         onView(withId(R.id.memberMailInput)).perform(typeText("email1@lamzone.com"));
-        onView(GetElementFromMatch.atPosition(allOf(withId(R.id.text_input_end_icon)),4)).perform(click());
+        onView(GetElementFromMatch.atPosition(allOf(withId(R.id.text_input_end_icon)), 5)).perform(click());
         onView(withId(R.id.memberMailInput)).perform(typeText("email2@lamzone.com"));
-        onView(GetElementFromMatch.atPosition(allOf(withId(R.id.text_input_end_icon)),4)).perform(click());
+        onView(GetElementFromMatch.atPosition(allOf(withId(R.id.text_input_end_icon)), 5)).perform(click());
         Espresso.closeSoftKeyboard();
         // validate
         onView(withId(R.id.addButton)).perform(click());
 
         //check if created and added in meeting list
-        onView(GetElementFromMatch.atPosition(
-                allOf(withId(R.id.item_title)),
-                initialMeetingCount)
-        ).check(matches(withText(expectedItemTitle)));
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.actionOnItem(
+                        hasDescendant(withText(expectedItemTitle)),
+                        click()));
+
         //check if Meeting Count is correct
         onView(ViewMatchers.withId(R.id.recyclerView)).check(withItemCount(initialMeetingCount + 1));
     }

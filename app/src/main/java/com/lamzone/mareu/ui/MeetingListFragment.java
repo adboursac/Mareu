@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -45,6 +44,7 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
         initData();
         initAddButton();
         setHasOptionsMenu(true);
+        mMeetingViewModel.applyFilters();
 
         return mBinding.getRoot();
     }
@@ -87,8 +87,8 @@ public class MeetingListFragment extends Fragment implements MeetingDeleteComman
             case R.id.meeting_menu_filter_room:
                 Navigation.findNavController(getView()).navigate(R.id.navigateToRoomFilter);
                 break;
-            case R.id.meeting_menu_filter_hour:
-                Navigation.findNavController(getView()).navigate(R.id.navigateToHourFilter);
+            case R.id.meeting_menu_filter_date:
+                Navigation.findNavController(getView()).navigate(R.id.navigateToDateFilter);
                 break;
             default:
                 Log.w("MeetingListFragment", "onOptionsItemSelected: didn't match any menu item");

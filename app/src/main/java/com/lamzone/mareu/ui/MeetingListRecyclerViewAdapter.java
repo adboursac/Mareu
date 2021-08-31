@@ -55,11 +55,6 @@ public class MeetingListRecyclerViewAdapter extends RecyclerView.Adapter<Meeting
         holder.mMeetingItemBinding.itemRoomIcon.setColorFilter(room.getColor(resources));
         holder.mMeetingItemBinding.itemIconLetter.setText(room.getLetter(resources));
         holder.mMeetingItemBinding.itemDeleteButton.setOnClickListener(v -> mDeleteCommand.deleteMeeting(meeting));
-        holder.itemView.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(
-                        MeetingListFragmentDirections.navigateToMeetingDetails().setMeetingId(meeting.getId())
-                )
-        );
     }
 
     @Override

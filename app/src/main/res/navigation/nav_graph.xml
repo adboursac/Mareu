@@ -16,11 +16,8 @@
             android:id="@+id/navigateToRoomFilter"
             app:destination="@id/roomFilterFragment" />
         <action
-            android:id="@+id/navigateToHourFilter"
-            app:destination="@id/hourFilterFragment" />
-        <action
-            android:id="@+id/navigateToMeetingDetails"
-            app:destination="@id/meetingDetailsFragment" />
+            android:id="@+id/navigateToDateFilter"
+            app:destination="@id/DateFilterFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragmentMeetingAdd"
@@ -41,25 +38,12 @@
             app:destination="@id/fragmentMeetingList" />
     </fragment>
     <fragment
-        android:id="@+id/hourFilterFragment"
-        android:name="com.lamzone.mareu.ui.TimeFilterFragment"
-        android:label="@string/filterHours"
-        tools:layout="@layout/fragment_hour_filter" >
+        android:id="@+id/DateFilterFragment"
+        android:name="com.lamzone.mareu.ui.DateFilterFragment"
+        android:label="@string/filterDate"
+        tools:layout="@layout/fragment_date_filter" >
         <action
             android:id="@+id/navigateToMeetingList"
             app:destination="@id/fragmentMeetingList" />
-    </fragment>
-    <fragment
-        android:id="@+id/meetingDetailsFragment"
-        android:name="com.lamzone.mareu.ui.MeetingDetailsFragment"
-        android:label="@string/meetingDetails"
-        tools:layout="@layout/fragment_meeting_details" >
-        <action
-            android:id="@+id/navigateToMeetingList"
-            app:destination="@id/fragmentMeetingList" />
-        <argument
-            android:name="meetingId"
-            app:argType="long"
-            android:defaultValue="0L" />
     </fragment>
 </navigation>

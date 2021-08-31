@@ -112,7 +112,7 @@ public class Meeting {
     public String shortDescription(Resources resources) {
         return getTitle() +
                 " • " +
-                MeetingDateTimeHelper.toString(mStart) +
+                MeetingDateTimeHelper.dateTimeToTimeString(mStart) +
                 " • " +
                 mRoom.getName(resources);
     }

@@ -1,4 +1,4 @@
-package com.lamzone.mareu.ui;
+    package com.lamzone.mareu.ui;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -39,6 +39,7 @@ public class MeetingAddFragment extends Fragment {
         initData();
         initAddButton();
         initRoomDropMenu(mBinding.roomInput);
+        DatePicker.setDatePickerOnTextInput(mBinding.dateInput, getChildFragmentManager());
         TimePicker.setTimePickerOnTextInput(mBinding.startTimeInput, getChildFragmentManager());
         TimePicker.setTimePickerOnTextInput(mBinding.endTimeInput, getChildFragmentManager());
         initMemberListItems();
@@ -83,15 +84,17 @@ public class MeetingAddFragment extends Fragment {
             mBinding.membersListInput.setText(memberList);
         });
 
-        mBinding.memberMailInput.addTextChangedListener(createTextWatcher());
+        mBinding.memberMailInput.addTextChangedListener(createMemberInputWatcher());
 
+        mBinding.membersListInput.addTextChangedListener(createMemberListWatcher());
+        mBinding.membersListLayout.setEndIconVisible(false);
         mBinding.membersListLayout.setEndIconOnClickListener(v -> {
             mMemberList.clear();
             mBinding.membersListInput.setText("");
         });
     }
 
-    private TextWatcher createTextWatcher() {
+    private TextWatcher createMemberInputWatcher() {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -110,13 +113,34 @@ public class MeetingAddFragment extends Fragment {
         };
     }
 
+    private TextWatcher createMemberListWatcher() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mBinding.membersListLayout.setEndIconVisible(mMemberList.size() > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
+    }
+
     private Meeting generateMeeting() {
         return new Meeting(
                 System.currentTimeMillis(),
                 mBinding.titleInput.getText().toString(),
                 mSelectedRoom,
-                MeetingDateTimeHelper.toDateTime(mBinding.startTimeInput.getText().toString()),
-                MeetingDateTimeHelper.toDateTime(mBinding.endTimeInput.getText().toString()),
+                MeetingDateTimeHelper.stringToDateTime(
+                        mBinding.dateInput.getText().toString(), null,
+                        mBinding.startTimeInput.getText().toString(), null),
+                MeetingDateTimeHelper.stringToDateTime(
+                        mBinding.dateInput.getText().toString(), null,
+                        mBinding.endTimeInput.getText().toString(), null),
                 mMemberList
         );
     }
